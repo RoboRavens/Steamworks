@@ -1,39 +1,66 @@
 package org.usfirst.frc.team1188.robot;
 
-import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.Joystick;
 
-import org.usfirst.frc.team1188.robot.commands.ExampleCommand;
-
-/**
- * This class is the glue that binds the controls on the physical operator
- * interface to the commands and command groups that allow control of the robot.
- */
 public class OI {
-	//// CREATING BUTTONS
-	// One type of button is a joystick button which is any button on a
-	//// joystick.
-	// You create one by telling it which joystick it's on and which button
-	// number it is.
-	// Joystick stick = new Joystick(port);
-	// Button button = new JoystickButton(stick, buttonNumber);
-
-	// There are a few additional built in buttons you can use. Additionally,
-	// by subclassing Button you can create custom triggers and bind those to
-	// commands the same as any other Button.
-
-	//// TRIGGERING COMMANDS WITH BUTTONS
-	// Once you have a button, it's trivial to bind it to a button in one of
-	// three ways:
-
-	// Start the command when the button is pressed and let it run the command
-	// until it is finished as determined by it's isFinished method.
-	// button.whenPressed(new ExampleCommand());
-
-	// Run the command while the button is being held down and interrupt it once
-	// the button is released.
-	// button.whileHeld(new ExampleCommand());
-
-	// Start the command when the button is released and let it run the command
-	// until it is finished as determined by it's isFinished method.
-	// button.whenReleased(new ExampleCommand());
+	Joystick driveController;
+	Joystick operationController;
+	
+	public OI(Joystick driveController, Joystick operationController) {
+		this.driveController = driveController;
+		this.operationController = operationController;
+	}
+	
+	// Shifters
+	public boolean getShifterShiftLowButton() {
+		return operationController.getRawButton(ControlsMap.shifterShiftLowButton);
+	}
+	
+	public boolean getShifterShiftHighButton() {
+		return operationController.getRawButton(ControlsMap.shifterShiftHighButton);
+	}
+	
+	// Fuel intake
+	public boolean getFuelIntakeCollectButton() {
+		return operationController.getRawButton(ControlsMap.fuelIntakeCollectButton);
+	}
+	
+	public boolean getFuelIntakeReverseButton() {
+		return operationController.getRawButton(ControlsMap.fuelIntakeReverseButton);
+	}
+	
+	// Shooter
+	public boolean getShooterRevButton() {
+		return operationController.getRawButton(ControlsMap.shooterRevButton);
+	}
+	
+	public boolean getShooterShootButton() {
+		return operationController.getRawButton(ControlsMap.shooterShootButton);
+	}
+	
+	public boolean getShooterStopButton() {
+		return operationController.getRawButton(ControlsMap.shooterStopButton);
+	}
+	
+	public boolean getShooterOverrideShootButton() {
+		return operationController.getRawButton(ControlsMap.shooterOverrideShootButton);
+	}
+	
+	// Gear intake/placement
+	public boolean getGearIntakeExtendButton() {
+		return operationController.getRawButton(ControlsMap.gearIntakeExtendButton);
+	}
+	
+	public boolean getGearIntakeRetractButton() {
+		return operationController.getRawButton(ControlsMap.gearIntakeRetractButton);
+	}
+	
+	public boolean getGearCarriageExtendButton() {
+		return operationController.getRawButton(ControlsMap.gearCarriageExtendButton);
+	}
+	
+	public boolean getGearCarriageRetractButton() {
+		return operationController.getRawButton(ControlsMap.gearCarriageRetractButton);
+	}
+	
 }

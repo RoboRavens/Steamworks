@@ -4,13 +4,10 @@ import org.usfirst.frc.team1188.robot.*;
 
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 public class RavenTank {
-	Robot robot;
-
     RavenEncoder leftEncoder;
     RavenEncoder rightEncoder;
     
@@ -23,8 +20,6 @@ public class RavenTank {
 	protected double gyroZero;
 	protected double orientation = 0;
 	protected double slewRate = Calibrations.slewRate;
-	
-	// Joystick calibrationStick = new Joystick(RobotMap.calibrationJoystick);
 	
 	protected double netInchesTraveled = 0;
 	protected double targetNetInchesTraveled = 0;
@@ -40,16 +35,10 @@ public class RavenTank {
 	protected boolean turning = false;
 	protected boolean waiting = false;
 	
-	RavenTalon driveRight1 = new RavenTalon(RobotMap.rightDriveChannel1, slewRate);
-	RavenTalon driveRight2 = new RavenTalon(RobotMap.rightDriveChannel2, slewRate);
-	RavenTalon driveRight3 = new RavenTalon(RobotMap.rightDriveChannel3, slewRate);
-	RavenTalon driveLeft1 = new RavenTalon(RobotMap.leftDriveChannel1, slewRate);
-	RavenTalon driveLeft2 = new RavenTalon(RobotMap.leftDriveChannel2, slewRate);
-	RavenTalon driveLeft3 = new RavenTalon(RobotMap.leftDriveChannel3, slewRate);
+	RavenTalon leftDriveArray = new RavenTalon(RobotMap.leftDriveArray, slewRate);
+	RavenTalon rightDriveArray = new RavenTalon(RobotMap.rightDriveArray, slewRate);
 	
-	public RavenTank(Robot robot) {
-		this.robot = robot;
-		
+	public RavenTank() {
 		slewRate = Calibrations.slewRate;
 		
 		Encoder rightWpiEncoder = new Encoder(RobotMap.rightDriveEncoder1, RobotMap.rightDriveEncoder2);
@@ -156,16 +145,11 @@ public class RavenTank {
     }
     
     public void driveLeftSide(double magnitude) {
-		// System.out.println("Driving left side. Magnitude: " + magnitude);
-    	driveLeft1.set(magnitude);
-		driveLeft2.set(magnitude);
-		driveLeft3.set(magnitude);
+    	leftDriveArray.set(magnitude);
     }
     
     public void driveRightSide(double magnitude) {
-    	driveRight1.set(magnitude);
-		driveRight2.set(magnitude);
-		driveRight3.set(magnitude);
+    	rightDriveArray.set(magnitude);
     }
 	
 	public double getScaledTurnFromTranslation(double translation, double turn) {

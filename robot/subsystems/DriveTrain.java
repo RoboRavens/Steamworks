@@ -2,24 +2,18 @@ package org.usfirst.frc.team1188.robot.subsystems;
 
 import org.usfirst.frc.team1188.ravenhardware.RavenTank;
 import org.usfirst.frc.team1188.robot.Robot;
-import org.usfirst.frc.team1188.robot.commands.TankDrive;
+import org.usfirst.frc.team1188.robot.commands.drivetrain.DriveTrainDriveFPS;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-/**
- *
- */
 public class DriveTrain extends Subsystem {
-	
-	public Robot robot;
 	Joystick driveController;
 	public RavenTank ravenTank;
 	
-	public DriveTrain(Robot robot, Joystick driveController) {
-		this.robot = robot;
-		this.driveController = driveController;
-		this.ravenTank = new RavenTank(robot);
+	public DriveTrain() {
+		this.driveController = Robot.driveController;
+		this.ravenTank = new RavenTank();
 	}
 
     // Put methods for controlling this subsystem
@@ -29,7 +23,7 @@ public class DriveTrain extends Subsystem {
         // Set the default command for a subsystem here.
      
     	//setDefaultCommand(new MySpecialCommand());
-    	setDefaultCommand(new TankDrive(this, driveController));
+    	setDefaultCommand(new DriveTrainDriveFPS(this, driveController));
     }
     
 }
