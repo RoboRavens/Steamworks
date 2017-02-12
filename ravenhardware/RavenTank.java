@@ -2,24 +2,38 @@ package org.usfirst.frc.team1188.ravenhardware;
 
 import org.usfirst.frc.team1188.robot.*;
 
+import com.kauailabs.navx.frc.AHRS;
+import com.kauailabs.navx.frc.AHRS.BoardAxis;
+
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 public class RavenTank {
-    RavenEncoder leftEncoder;
-    RavenEncoder rightEncoder;
+	Robot robot;
+
+    // RavenEncoder leftEncoder;
+    // RavenEncoder rightEncoder;
     
-    Gyro orientationGyro;
+    // Gyro orientationGyro;
     Timer gyroCooldownTimer;
+    
+    AHRS orientationGyro = new AHRS(SPI.Port.kMXP);
+    
+    AHRS.BoardYawAxis boardYawAxis;
     
     protected int driveMode;
 	protected int gyroMode;
-	protected int limitedPower;
+	protected boolean cutPower;
 	protected double gyroZero;
 	protected double orientation = 0;
 	protected double slewRate = Calibrations.slewRate;
+	
+	// Joystick calibrationStick = new Joystick(RobotMap.calibrationJoystick);
 	
 	protected double netInchesTraveled = 0;
 	protected double targetNetInchesTraveled = 0;
@@ -35,37 +49,58 @@ public class RavenTank {
 	protected boolean turning = false;
 	protected boolean waiting = false;
 	
-	RavenTalon leftDriveArray = new RavenTalon(RobotMap.leftDriveArray, slewRate);
-	RavenTalon rightDriveArray = new RavenTalon(RobotMap.rightDriveArray, slewRate);
+
+	RavenTalon driveLeft1 = new RavenTalon(RobotMap.leftDriveChannel1, slewRate);
+	RavenTalon driveRight1 = new RavenTalon(RobotMap.rightDriveChannel1, slewRate);
+	// RavenTalon driveRight2 = new RavenTalon(RobotMap.rightDriveChannel2, slewRate);
+	//RavenTalon driveRight3 = new RavenTalon(RobotMap.rightDriveChannel3, slewRate);
+	// RavenTalon driveLeft2 = new RavenTalon(RobotMap.leftDriveChannel2, slewRate);
+	//RavenTalon driveLeft3 = new RavenTalon(RobotMap.leftDriveChannel3, slewRate);
 	
-	public RavenTank() {
+	protected Solenoid shiftToLowGearSolenoid;
+	protected Solenoid shiftToHighGearSolenoid;
+	
+	public RavenTank(Robot robot) {
+		initializeRavenTank(robot);
+	}
+	
+	public RavenTank(Robot robot, Solenoid lowGearSolenoid, Solenoid highGearSolenoid) {
+		this.shiftToLowGearSolenoid = lowGearSolenoid;
+		this.shiftToHighGearSolenoid = highGearSolenoid;
+		
+		initializeRavenTank(robot);
+	}
+
+	private void initializeRavenTank(Robot robot) {
+		this.robot = robot;
+		
 		slewRate = Calibrations.slewRate;
 		
-		Encoder rightWpiEncoder = new Encoder(RobotMap.rightDriveEncoder1, RobotMap.rightDriveEncoder2);
-		Encoder leftWpiEncoder = new Encoder(RobotMap.leftDriveEncoder1, RobotMap.leftDriveEncoder2);
+		// Encoder rightWpiEncoder = new Encoder(RobotMap.rightDriveEncoder1, RobotMap.rightDriveEncoder2);
+		// Encoder leftWpiEncoder = new Encoder(RobotMap.leftDriveEncoder1, RobotMap.leftDriveEncoder2);
     
-		leftEncoder = new RavenEncoder(rightWpiEncoder, Calibrations.rightEncoderCyclesPerRevolution, Calibrations.driveWheelCircumferenceInches);
-		rightEncoder = new RavenEncoder(leftWpiEncoder, Calibrations.leftEncoderCyclesPerRevolution, Calibrations.driveWheelCircumferenceInches);
+		// leftEncoder = new RavenEncoder(rightWpiEncoder, Calibrations.rightEncoderCyclesPerRevolution, Calibrations.driveWheelCircumferenceInches);
+		// rightEncoder = new RavenEncoder(leftWpiEncoder, Calibrations.leftEncoderCyclesPerRevolution, Calibrations.driveWheelCircumferenceInches);
 		
-		rightEncoder.setInverted(true);
+		// rightEncoder.setInverted(true);
     
-		orientationGyro = new AnalogGyro(1);
+		// orientationGyro = new AnalogGyro(1);
 		
 		gyroCooldownTimer = new Timer();		
 		
 		setDriveMode(Calibrations.defaultDriveMode);
-		setLimitedPower(0);
+		setCutPower(false);
 				
 		setGyroMode(Calibrations.defaultGyroMode);
 		gyroZero = setGyroZero();
 	}
-
+	
 	public void setDriveMode(int driveMode) {
     	this.driveMode = driveMode;
     }
 	
-	public void setLimitedPower(int powerMode) {
-    	this.limitedPower = powerMode;
+	public void setCutPower(boolean cutPower) {
+    	this.cutPower = cutPower;
     }
 	
 	public void setGyroMode(int gyroMode) {
@@ -88,7 +123,7 @@ public class RavenTank {
 		// driveRightSide.setSlewRate(slewRate);
 		// driveLeftSide.setSlewRate(slewRate);
 	}
-    
+	
     public void drive(double left, double rightY, double rightX) {
     	left = deadband(left);
     	rightY = deadband(rightY);
@@ -109,7 +144,7 @@ public class RavenTank {
 	public void bulldozerTank(double left, double right) {
 		// Invert the left side.
     	left *= -1;
-    	if (limitedPower == 1){
+    	if (cutPower){
     		left *= Calibrations.cutPowerModeMovementRatio;
     		right *= Calibrations.cutPowerModeTurnRatio;
     	}
@@ -122,10 +157,10 @@ public class RavenTank {
     public void fpsTank(double translation, double turn) {
     	// System.out.println("Gyro: " + orientationGyro.getAngle() + " Lencoder: " + this.leftEncoder.getNetInchesTraveled() + " Rencoder: " + this.rightEncoder.getNetInchesTraveled());
 		
-		// System.out.println("LINV: " + this.leftEncoder.inverted + " RINV: " + this.rightEncoder.inverted);
+		// System.out.println("LINV: " + this.leftEncoder.getNetInchesTraveled() + " RINV: " + this.rightEncoder.getNetInchesTraveled());
 		
     	
-    	if (limitedPower == 1){
+    	if (cutPower){
     		translation *= Calibrations.cutPowerModeMovementRatio;
     		turn *= Calibrations.cutPowerModeTurnRatio;
     	}
@@ -145,11 +180,27 @@ public class RavenTank {
     }
     
     public void driveLeftSide(double magnitude) {
-    	leftDriveArray.set(magnitude);
+		// System.out.println("Driving left side. Magnitude: " + magnitude);
+    	driveLeft1.set(magnitude);
+		//driveLeft2.set(magnitude);
+		// driveLeft3.set(magnitude);
     }
     
     public void driveRightSide(double magnitude) {
-    	rightDriveArray.set(magnitude);
+    	driveRight1.set(magnitude);
+		//driveRight2.set(magnitude);
+		// driveRight3.set(magnitude);
+    }
+    
+    public void shiftToLowGear() {
+    	shiftToLowGearSolenoid.set(true);
+    	shiftToHighGearSolenoid.set(false);
+    
+    }
+    
+    public void shiftToHighGear() {
+    	shiftToHighGearSolenoid.set(true);
+    	shiftToLowGearSolenoid.set(false);
     }
 	
 	public double getScaledTurnFromTranslation(double translation, double turn) {
@@ -164,6 +215,7 @@ public class RavenTank {
     	
     }
     
+    /*
 	public int getRightDriveEncoder(){
 		System.out.println(rightEncoder.getNetInchesTraveled());
 		return rightEncoder.getCycles();
@@ -173,7 +225,7 @@ public class RavenTank {
 		System.out.println(leftEncoder.getNetInchesTraveled());
 		return leftEncoder.getCycles();
 	}    
-
+*/
     public double getDriveGyro() {
     	//System.out.println("Gyro angle: " + Math.round(orientationGyro.getAngle()) + " Gyro mode: " + gyroMode);
     	return orientationGyro.getAngle();
@@ -213,7 +265,7 @@ public class RavenTank {
     	// If the gyro is in disabled mode, just return immediately.
     	if (gyroMode == Calibrations.gyroDisabled) {
     		return 0;
-    	}
+    	} 
     	
     	if (Math.abs(turn) > 0 || this.adjustGyroDueToTimer()) {
         	this.setGyroZero();
@@ -225,6 +277,7 @@ public class RavenTank {
         }
     	
     	return getStaticGyroAdjustment();
+    	// return 0;
     }
     
     public double getStaticGyroAdjustment() {
@@ -250,7 +303,7 @@ public class RavenTank {
     	
     	gyroAdjust *= Calibrations.gyroAdjustmentScaleFactor;
     	
-        System.out.println("Gyro adjust: " + gyroAdjust + " gyro: " + this.orientationGyro.getAngle() +  "Zero" + gyroZero);
+        // System.out.println("Gyro adjust: " + gyroAdjust + " gyro: " + this.orientationGyro.getAngle() +  "Zero" + gyroZero);
     	
         return gyroAdjust;
     }
@@ -258,14 +311,14 @@ public class RavenTank {
     public void stopAndWait() {
     	enableAutomatedDriving(0);
     }
-    
+    /*
     public void driveForwardInches(double inches, int direction, double speed) {
     	leftEncoderReferencePoint = this.leftEncoder.getNetInchesTraveled();
     	rightEncoderReferencePoint = this.rightEncoder.getNetInchesTraveled();
       
     	this.targetNetInchesTraveled = inches;
     	enableAutomatedDriving(direction, speed);
-    }
+    }*/
     
     public void driveUntilOverObstacle(int direction, double speed) {
     	drivingThroughObstacle = true;
@@ -307,7 +360,7 @@ public class RavenTank {
     }
     
     public void maintainState() {
-		System.out.println("Gyro: " + orientationGyro.getAngle() + " Lencoder: " + this.leftEncoder.getNetInchesTraveled() + " Rencoder: " + this.rightEncoder.getNetInchesTraveled());
+		// System.out.println("Gyro: " + orientationGyro.getAngle() + " Lencoder: " + this.leftEncoder.getNetInchesTraveled() + " Rencoder: " + this.rightEncoder.getNetInchesTraveled());
 		
     	// Maintain state only does things while automated driving is enabled.
     	if (automatedDrivingEnabled == false) {
@@ -351,7 +404,7 @@ public class RavenTank {
     }
     
     public void maintainStateDrivingStraight() {
-    	this.maintainEncoders();
+    	//this.maintainEncoders();
     	
     	// Check if we've made it to the destination.
     	if (netInchesTraveled <= targetNetInchesTraveled) {
@@ -370,6 +423,7 @@ public class RavenTank {
     	this.fpsTank(power, 0);
     }
     
+    /*
     public void maintainEncoders() {
     	double leftInches = this.leftEncoder.getNetInchesTraveled() - this.leftEncoderReferencePoint;
     	double rightInches = this.rightEncoder.getNetInchesTraveled() - this.rightEncoderReferencePoint;
@@ -378,7 +432,7 @@ public class RavenTank {
     	this.netInchesTraveled = (leftInches + rightInches) / 2;
 		
 		System.out.println("ME NIT: " + this.netInchesTraveled);
-    }
+    }*/
     
     public double getPowerCoefficient() {
     	double decelerationRangeInches = Calibrations.decelerationInchesPerMotorOutputMagnitude * this.automatedDrivingSpeed;
@@ -411,31 +465,6 @@ public class RavenTank {
     	power *= automatedDrivingDirection;
     	
     	fpsTank(power, 0);
-    }
-    
-    
-    public boolean robotIsOnCarpet() {
-    	double zAccel = robot.accelerometer.getZ();
-    	
-    	boolean onCarpet = false;
-    	
-    	if (zAccel >= Calibrations.carpetRangeMaximum && zAccel <= Calibrations.carpetRangeMaximum) {
-    		onCarpet = true;
-    	}
-    	
-    	return onCarpet;
-    }
-    
-    public boolean robotIsOnBatter() {
-    	double zAccel = robot.accelerometer.getZ();
-    	
-    	boolean onBatter = false;
-    	
-    	if (zAccel >= Calibrations.batterRangeMaximum && zAccel <= Calibrations.batterRangeMaximum) {
-    		onBatter = true;
-    	}
-    	
-    	return onBatter;
     }
     */
     

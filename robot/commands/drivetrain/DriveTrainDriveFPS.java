@@ -1,17 +1,20 @@
 package org.usfirst.frc.team1188.robot.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Command;
 import org.usfirst.frc.team1188.robot.subsystems.*;
-
+import org.usfirst.frc.team1188.robot.*;
 
 public class DriveTrainDriveFPS extends Command {
+	Robot robot;
     DriveTrain driveTrain;
     Joystick driveController;
 
     public DriveTrainDriveFPS(DriveTrain driveTrain, Joystick driveController) {
     	requires(driveTrain);
     	this.driveTrain = driveTrain;
+    	this.robot = driveTrain.robot;
     	this.driveController = driveController;
 	}
 

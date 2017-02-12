@@ -5,17 +5,33 @@ import org.usfirst.frc.team1188.robot.Robot;
 import org.usfirst.frc.team1188.robot.commands.drivetrain.DriveTrainDriveFPS;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
+/**
+ *
+ */
 public class DriveTrain extends Subsystem {
+	
+	public Robot robot;
 	Joystick driveController;
 	public RavenTank ravenTank;
 	
-	public DriveTrain() {
-		this.driveController = Robot.driveController;
-		this.ravenTank = new RavenTank();
+	public DriveTrain(Robot robot, Joystick driveController) {
+		initializeDriveTrain(robot, driveController);
+		this.ravenTank = new RavenTank(robot);
+	}
+	
+	public DriveTrain(Robot robot, Joystick driveController, Solenoid lowGearSolenoid, Solenoid highGearSolenoid) {
+		initializeDriveTrain(robot, driveController);
+		this.ravenTank = new RavenTank(robot, lowGearSolenoid, highGearSolenoid);
 	}
 
+	private void initializeDriveTrain(Robot robot, Joystick driveController) {
+		this.robot = robot;
+		this.driveController = driveController;
+	}
+	
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 

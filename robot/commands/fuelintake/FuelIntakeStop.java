@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj.command.Command;
 public class FuelIntakeStop extends Command {
 	FuelIntake fuelIntake;
 	
-    public FuelIntakeStop() {
-    	this.fuelIntake = Robot.fuelIntake;
+    public FuelIntakeStop(FuelIntake fuelIntake) {
+    	this.fuelIntake = fuelIntake;
     	requires(fuelIntake);
     	
     }

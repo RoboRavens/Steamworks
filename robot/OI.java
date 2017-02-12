@@ -12,12 +12,16 @@ public class OI {
 	}
 	
 	// Shifters
-	public boolean getShifterShiftLowButton() {
-		return operationController.getRawButton(ControlsMap.shifterShiftLowButton);
+	public boolean getDriveShiftLowButton() {
+		return driveController.getRawButton(ControlsMap.driveShiftToLowGearButton);
 	}
 	
-	public boolean getShifterShiftHighButton() {
-		return operationController.getRawButton(ControlsMap.shifterShiftHighButton);
+	public boolean getDriveShiftHighButton() {
+		return driveController.getRawButton(ControlsMap.driveShiftToHighGearButton);
+	}
+	
+	public boolean getDriveCutPowerMode() {
+		return driveController.getRawAxis(ControlsMap.driveCutPowerAxis) > .25;
 	}
 	
 	// Fuel intake

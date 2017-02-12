@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj.command.Command;
 public class FuelIntakeReverse extends Command {
 	FuelIntake fuelIntake;
 
-    public FuelIntakeReverse() {
-    	this.fuelIntake = Robot.fuelIntake;
+    public FuelIntakeReverse(FuelIntake fuelIntake) {
+    	this.fuelIntake = fuelIntake;
     	requires(fuelIntake);
     	
     }

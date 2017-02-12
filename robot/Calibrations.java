@@ -13,8 +13,8 @@ public final class Calibrations {
 	public static final int bulldozerTank = 0;
 	public static final int fpsTank = 1;
 	
-	public static final int gyroDisabled = 0;
-	public static final int gyroEnabled = 1;
+	public static final int gyroDisabled = 1;
+	public static final int gyroEnabled = 0;
 	
 	// Deadband
 	public static final double deadbandMagnitude = .1;
@@ -44,4 +44,6 @@ public final class Calibrations {
 	// Problems with this include that motor output is acceleration, but necessary
 	// deceleration distance is correlated with distance.
 	public static final double decelerationInchesPerMotorOutputMagnitude = 18;
+	
+	public static final double FuelIntakePowerMagnitude = .5;
 }
