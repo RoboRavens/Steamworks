@@ -27,6 +27,12 @@ public class RobotMap {
 	public static final int fuelShooterMotor1 = 5;
 	public static final int fuelShooterMotor2 = 4;
 	public static final int climberMotor = 6;
+	public static final int gearCarriageMotor = 2;
+	public static final int fuelPumpMotor = 1;
+	
+	// Sensors
+	public static final int gearCarriageExtensionLimit = 4;
+	public static final int gearCarriageRetractionLimit = 5;
 	
 	
 	

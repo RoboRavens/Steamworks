@@ -67,4 +67,16 @@ public class OI {
 		return operationController.getRawButton(ControlsMap.gearCarriageRetractButton);
 	}
 	
+	public boolean getClimberClimbButton() {
+		return operationController.getRawButton(ControlsMap.climberClimbButton);
+	}
+	
+	public boolean getFuelPumpPumpButton() {
+		return operationController.getRawButton(ControlsMap.fuelPumpPumpButton);
+	}
+	
+	public boolean getFuelPumpReverseButton() {
+		return operationController.getRawButton(ControlsMap.fuelPumpReverseButton);
+	}
+	
 }

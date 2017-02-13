@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team1188.robot;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -16,12 +17,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
 
-import org.usfirst.frc.team1188.robot.subsystems.DriveTrain;
-import org.usfirst.frc.team1188.robot.subsystems.FuelIntake;
+import org.usfirst.frc.team1188.robot.subsystems.*;
 import org.usfirst.frc.team1188.robot.commands.fuelintake.*;
+import org.usfirst.frc.team1188.robot.commands.fuelpump.*;
+import org.usfirst.frc.team1188.robot.commands.gearcarriage.*;
+import org.usfirst.frc.team1188.robot.commands.gearintake.*;
 import org.usfirst.frc.team1188.robot.commands.drivetrain.*;
 import org.usfirst.frc.team1188.robot.commands.shooter.*;
+import org.usfirst.frc.team1188.robot.commands.climber.*;
 
+import com.ctre.CANTalon;
 import com.kauailabs.navx.frc.AHRS;
 
 
@@ -33,11 +38,11 @@ import com.kauailabs.navx.frc.AHRS;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	public static OI oi;
+	
 	Joystick driveController = new Joystick(0);
 	Joystick operationController = new Joystick(1);
 	
-	public static OI oi;
-
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
 	
@@ -49,22 +54,24 @@ public class Robot extends IterativeRobot {
 	Solenoid gearCarriageRetractionSolenoid = new Solenoid(3);
 	Solenoid shiftToLowGearSolenoid = new Solenoid(4);
 	Solenoid shiftToHighGearSolenoid = new Solenoid(5);
+	DigitalInput gearCarriageExtensionLimit = new DigitalInput(RobotMap.gearCarriageExtensionLimit);
+	DigitalInput gearCarriageRetractionLimit = new DigitalInput(RobotMap.gearCarriageRetractionLimit);
+	
+	CANTalon gearCarriageMotor = new CANTalon(RobotMap.gearCarriageMotor);
+	CANTalon fuelIntakeMotor = new CANTalon(RobotMap.fuelIntakeMotor);
+	CANTalon climberMotor = new CANTalon(RobotMap.climberMotor);
+	CANTalon fuelPumpMotor = new CANTalon(RobotMap.fuelPumpMotor);
 
 	public final DriveTrain driveTrain = new DriveTrain(this, driveController, shiftToLowGearSolenoid, shiftToHighGearSolenoid);
-	//public final GearIntake gearIntake = new GearIntake(this.operationController, gearIntakeExtensionSolenoid, gearIntakeRetractionSolenoid);
-	//public final GearCarriage gearCarriage = new GearCarriage(this.operationController, gearCarriageExtensionSolenoid, gearCarriageRetractionSolenoid);
-	public final FuelIntake fuelIntake = new FuelIntake();
+	public final GearIntake gearIntake = new GearIntake(this.operationController, gearIntakeExtensionSolenoid, gearIntakeRetractionSolenoid);
+	public final GearCarriage gearCarriage = new GearCarriage(this.operationController, gearCarriageMotor, gearCarriageExtensionLimit, gearCarriageRetractionLimit);
+	public final FuelIntake fuelIntake = new FuelIntake(fuelIntakeMotor);
+	public final Climber climber = new Climber(climberMotor);
+	public final FuelPump fuelPump = new FuelPump(fuelPumpMotor);
 	
 	Encoder leftEncoder = new Encoder(0,1);
 	Encoder rightEncoder = new Encoder(2,3);
 	
-	
-	boolean fuelIntakeRunning = false;
-	
-	/**
-	 * This function is run when the robot is first started up and should be
-	 * used for any initialization code.
-	 */
 	@Override
 	public void robotInit() {
 		//myDrive = new RobotDrive(0,1,2,3);
@@ -74,11 +81,6 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto mode", chooser);
 	}
 
-	/**
-	 * This function is called once each time the robot enters Disabled mode.
-	 * You can use it to reset any subsystem information you want to clear when
-	 * the robot is disabled.
-	 */
 	@Override
 	public void disabledInit() {
 	}
@@ -89,7 +91,6 @@ public class Robot extends IterativeRobot {
 	}
 	
 	
-
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
 	 * between different autonomous modes using the dashboard. The sendable
@@ -150,11 +151,9 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		//System.out.println("Navx.getAngle: " + navX.getAngle());
 		Scheduler.getInstance().run();
-		// double rightYAxisValue = left.getRawAxis(1);
 		System.out.println("REncoder: " + rightEncoder.get() + " LEncoder: " + leftEncoder.get());
 		
-		// System.out.println(driveController.getRawAxis(3));
-		
+
 		
 		if (oi.getDriveShiftLowButton()) {
 			driveTrain.ravenTank.shiftToLowGear();
@@ -172,9 +171,8 @@ public class Robot extends IterativeRobot {
 		}
 		
 		if (oi.getFuelIntakeCollectButton()) {
-				System.out.println("new FI collect");
-				Command fuelIntakeCollectCommand = new FuelIntakeCollect(fuelIntake);
-				fuelIntakeCollectCommand.start();
+			Command fuelIntakeCollectCommand = new FuelIntakeCollect(fuelIntake);
+			fuelIntakeCollectCommand.start();
 		}
 		else if (oi.getFuelIntakeReverseButton()) {
 			Command fuelIntakeReverseCommand = new FuelIntakeReverse(fuelIntake);
@@ -184,7 +182,42 @@ public class Robot extends IterativeRobot {
 		else {
 			Command fuelIntakeStopCommand = new FuelIntakeStop(fuelIntake);
 			fuelIntakeStopCommand.start();
-			
+		}
+		
+		if (oi.getClimberClimbButton()) {
+			Command climberClimbCommand = new ClimberClimb(climber);
+			climberClimbCommand.start();
+		}
+		else {
+			Command climberStopCommand = new ClimberStop(climber);
+			climberStopCommand.start();
+		}
+		
+		if (oi.getFuelPumpPumpButton()) {
+			Command fuelPumpPumpCommand = new FuelPumpPump(fuelPump);
+			fuelPumpPumpCommand.start();
+		}
+		else if (oi.getFuelPumpReverseButton()) {
+			Command fuelPumpReverseCommand = new FuelPumpReverse(fuelPump);
+			fuelPumpReverseCommand.start();
+		}
+		
+		if (oi.getGearIntakeExtendButton()) {
+			Command gearIntakeExtend = new GearIntakeExtend(gearIntake);
+			gearIntakeExtend.start();
+		}		
+		else if (oi.getGearIntakeRetractButton()) {
+			Command gearIntakeRetract = new GearIntakeRetract(gearIntake);
+			gearIntakeRetract.start();
+		}
+		
+		if (oi.getGearCarriageExtendButton()) {
+			Command gearCarriageExtend = new GearCarriageExtend(gearCarriage);
+			gearCarriageExtend.start();
+		}		
+		else if (oi.getGearCarriageRetractButton()) {
+			Command gearCarriageRetract = new GearCarriageRetract(gearCarriage);
+			gearCarriageRetract.start();
 		}
 		
 		

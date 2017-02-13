@@ -46,4 +46,8 @@ public final class Calibrations {
 	public static final double decelerationInchesPerMotorOutputMagnitude = 18;
 	
 	public static final double FuelIntakePowerMagnitude = .5;
+	public static final double ClimberClimbPowerMagnitude = 1;
+	public static final double FuelPumpPowerMagnitude = 1;
+	
+	public static final double FuelIndexerPowerMagnitude = 1;
 }

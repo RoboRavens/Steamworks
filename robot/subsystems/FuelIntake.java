@@ -1,27 +1,27 @@
 package org.usfirst.frc.team1188.robot.subsystems;
 
 import org.usfirst.frc.team1188.robot.Calibrations;
-import org.usfirst.frc.team1188.robot.RobotMap;
 import org.usfirst.frc.team1188.robot.commands.fuelintake.*;
-
 import com.ctre.CANTalon;
-
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class FuelIntake extends Subsystem {
+	CANTalon intakeMotor;
 	
-	CANTalon intakeMotor1 = new CANTalon(RobotMap.fuelIntakeMotor);
+	public FuelIntake(CANTalon intakeMotor) {
+		this.intakeMotor = intakeMotor;
+	}
 
     public void initDefaultCommand() {
         setDefaultCommand(new FuelIntakeStop(this));
     }
     
     public void collect() {
-    	this.set(-1 * Calibrations.FuelIntakePowerMagnitude);
+    	this.set(Calibrations.FuelIntakePowerMagnitude);
     }
     
     public void reverse() {
-    	this.set(Calibrations.FuelIntakePowerMagnitude);
+    	this.set(-1 * Calibrations.FuelIntakePowerMagnitude);
     }
     
     public void stop() {
@@ -29,7 +29,7 @@ public class FuelIntake extends Subsystem {
     }
     
     public void set(double magnitude) {
-    	intakeMotor1.set(magnitude);
+    	// By default, reverse collects. Multiply by negative one.
+    	intakeMotor.set(-1 * magnitude);
     }
 }
-

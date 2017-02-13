@@ -1,14 +1,15 @@
-package org.usfirst.frc.team1188.robot.commands.fuelintake;
+package org.usfirst.frc.team1188.robot.commands.gearcarriage;
 
-import org.usfirst.frc.team1188.robot.subsystems.FuelIntake;
+import org.usfirst.frc.team1188.robot.subsystems.GearCarriage;
 import edu.wpi.first.wpilibj.command.Command;
 
-public class FuelIntakeStop extends Command {
-	FuelIntake fuelIntake;
-	
-    public FuelIntakeStop(FuelIntake fuelIntake) {
-    	this.fuelIntake = fuelIntake;
-    	requires(fuelIntake);
+
+public class GearCarriageExtend extends Command {
+	GearCarriage gearCarriage;
+
+    public GearCarriageExtend(GearCarriage gearCarriage) {
+    	this.gearCarriage = gearCarriage;
+    	requires(gearCarriage);
     }
 
     // Called just before this Command runs the first time
@@ -17,7 +18,7 @@ public class FuelIntakeStop extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	fuelIntake.stop();
+    	gearCarriage.extend();
     }
 
     // Make this return true when this Command no longer needs to run execute()

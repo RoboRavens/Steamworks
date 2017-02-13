@@ -17,4 +17,7 @@ public class ControlsMap {
 	public static final int gearIntakeRetractButton = 7;
 	public static final int gearCarriageExtendButton = 8;
 	public static final int gearCarriageRetractButton = 9;
+	public static final int climberClimbButton = 10;
+	public static final int fuelPumpPumpButton = 11;
+	public static final int fuelPumpReverseButton = 12;
 }

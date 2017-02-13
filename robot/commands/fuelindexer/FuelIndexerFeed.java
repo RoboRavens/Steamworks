@@ -1,14 +1,14 @@
-package org.usfirst.frc.team1188.robot.commands.fuelintake;
+package org.usfirst.frc.team1188.robot.commands.fuelindexer;
 
-import org.usfirst.frc.team1188.robot.subsystems.FuelIntake;
+import org.usfirst.frc.team1188.robot.subsystems.FuelIndexer;
 import edu.wpi.first.wpilibj.command.Command;
 
-public class FuelIntakeStop extends Command {
-	FuelIntake fuelIntake;
+public class FuelIndexerFeed extends Command {
+	FuelIndexer fuelIndexer;
 	
-    public FuelIntakeStop(FuelIntake fuelIntake) {
-    	this.fuelIntake = fuelIntake;
-    	requires(fuelIntake);
+    public FuelIndexerFeed(FuelIndexer fuelIndexer) {
+        this.fuelIndexer = fuelIndexer;
+        requires(fuelIndexer);
     }
 
     // Called just before this Command runs the first time
@@ -17,7 +17,7 @@ public class FuelIntakeStop extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	fuelIntake.stop();
+    	fuelIndexer.feed();
     }
 
     // Make this return true when this Command no longer needs to run execute()
