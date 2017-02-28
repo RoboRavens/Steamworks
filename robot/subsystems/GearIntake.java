@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1188.robot.subsystems;
 
+import org.usfirst.frc.team1188.robot.commands.gearintake.GearIntakeRetract;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -15,7 +17,9 @@ public class GearIntake extends Subsystem {
 		this.retractionSolenoid = retractionSolenoid;
 	}
 
-    public void initDefaultCommand() {}
+    public void initDefaultCommand() {
+    	setDefaultCommand(new GearIntakeRetract(this));
+    }
     
     public void extend() {
     	extensionSolenoid.set(true);

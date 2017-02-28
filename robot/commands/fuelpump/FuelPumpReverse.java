@@ -8,6 +8,7 @@ public class FuelPumpReverse extends Command {
 
     public FuelPumpReverse(FuelPump fuelPump) {
     	this.fuelPump = fuelPump;
+    	requires(fuelPump);
     }
 
     // Called just before this Command runs the first time
@@ -16,7 +17,7 @@ public class FuelPumpReverse extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	fuelPump.stop();
+    	fuelPump.reverse();
     }
 
     // Make this return true when this Command no longer needs to run execute()

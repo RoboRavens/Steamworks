@@ -8,6 +8,7 @@ public class FuelPumpStop extends Command {
 	
     public FuelPumpStop(FuelPump fuelPump) {
         this.fuelPump = fuelPump;
+        requires(fuelPump);
     }
 
     // Called just before this Command runs the first time

@@ -1,6 +1,5 @@
 package org.usfirst.frc.team1188.robot.commands.fuelintake;
 
-import org.usfirst.frc.team1188.robot.Robot;
 import org.usfirst.frc.team1188.robot.subsystems.FuelIntake;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -11,7 +10,6 @@ public class FuelIntakeReverse extends Command {
     public FuelIntakeReverse(FuelIntake fuelIntake) {
     	this.fuelIntake = fuelIntake;
     	requires(fuelIntake);
-    	
     }
 
     // Called just before this Command runs the first time

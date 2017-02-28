@@ -3,21 +3,16 @@ package org.usfirst.frc.team1188.ravenhardware;
 import org.usfirst.frc.team1188.robot.*;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.kauailabs.navx.frc.AHRS.BoardAxis;
-
-import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 public class RavenTank {
 	Robot robot;
 
-    // RavenEncoder leftEncoder;
-    // RavenEncoder rightEncoder;
+    public RavenEncoder leftEncoder;
+    public RavenEncoder rightEncoder;
     
     // Gyro orientationGyro;
     Timer gyroCooldownTimer;
@@ -52,10 +47,6 @@ public class RavenTank {
 
 	RavenTalon driveLeft1 = new RavenTalon(RobotMap.leftDriveChannel1, slewRate);
 	RavenTalon driveRight1 = new RavenTalon(RobotMap.rightDriveChannel1, slewRate);
-	// RavenTalon driveRight2 = new RavenTalon(RobotMap.rightDriveChannel2, slewRate);
-	//RavenTalon driveRight3 = new RavenTalon(RobotMap.rightDriveChannel3, slewRate);
-	// RavenTalon driveLeft2 = new RavenTalon(RobotMap.leftDriveChannel2, slewRate);
-	//RavenTalon driveLeft3 = new RavenTalon(RobotMap.leftDriveChannel3, slewRate);
 	
 	protected Solenoid shiftToLowGearSolenoid;
 	protected Solenoid shiftToHighGearSolenoid;
@@ -76,11 +67,12 @@ public class RavenTank {
 		
 		slewRate = Calibrations.slewRate;
 		
-		// Encoder rightWpiEncoder = new Encoder(RobotMap.rightDriveEncoder1, RobotMap.rightDriveEncoder2);
-		// Encoder leftWpiEncoder = new Encoder(RobotMap.leftDriveEncoder1, RobotMap.leftDriveEncoder2);
+		Encoder leftWpiEncoder = new Encoder(RobotMap.leftDriveEncoder1, RobotMap.leftDriveEncoder2);
+		Encoder rightWpiEncoder = new Encoder(RobotMap.rightDriveEncoder1, RobotMap.rightDriveEncoder2);
+		
     
-		// leftEncoder = new RavenEncoder(rightWpiEncoder, Calibrations.rightEncoderCyclesPerRevolution, Calibrations.driveWheelCircumferenceInches);
-		// rightEncoder = new RavenEncoder(leftWpiEncoder, Calibrations.leftEncoderCyclesPerRevolution, Calibrations.driveWheelCircumferenceInches);
+		leftEncoder = new RavenEncoder(leftWpiEncoder, Calibrations.leftEncoderCyclesPerRevolution, Calibrations.driveWheelDiameterInches);
+		rightEncoder = new RavenEncoder(rightWpiEncoder, Calibrations.rightEncoderCyclesPerRevolution, Calibrations.driveWheelDiameterInches);
 		
 		// rightEncoder.setInverted(true);
     
@@ -128,6 +120,9 @@ public class RavenTank {
     	left = deadband(left);
     	rightY = deadband(rightY);
     	rightX = deadband(rightX);
+
+//		System.out.println("Navx: " + orientationGyro.getAngle());
+		
     	
     	// this.setSlewRate(Math.abs(this.calibrationStick.getZ() * 2));
     	
@@ -143,7 +138,7 @@ public class RavenTank {
 	
 	public void bulldozerTank(double left, double right) {
 		// Invert the left side.
-    	left *= -1;
+    	right *= -1;
     	if (cutPower){
     		left *= Calibrations.cutPowerModeMovementRatio;
     		right *= Calibrations.cutPowerModeTurnRatio;
@@ -319,11 +314,12 @@ public class RavenTank {
     	this.targetNetInchesTraveled = inches;
     	enableAutomatedDriving(direction, speed);
     }*/
-    
+    /*
     public void driveUntilOverObstacle(int direction, double speed) {
     	drivingThroughObstacle = true;
     	enableAutomatedDriving(direction, speed);
     }
+    */
     
     public void turnRelativeDegrees(double degrees) {
     	this.setGyroZero(this.gyroZero + degrees);
@@ -403,6 +399,19 @@ public class RavenTank {
     	
     }
     
+    public double getGyroAngle() {    
+    	return orientationGyro.getAngle();    
+    }
+    
+    public double getNetInchesTraveled() {
+    	double leftInches = this.leftEncoder.getNetInchesTraveled();
+    	double rightInches = this.rightEncoder.getNetInchesTraveled();
+    	
+    	double netInchesTraveled = (leftInches + rightInches) / 2;
+    	
+    	return netInchesTraveled;
+    }
+    
     public void maintainStateDrivingStraight() {
     	//this.maintainEncoders();
     	
@@ -423,7 +432,7 @@ public class RavenTank {
     	this.fpsTank(power, 0);
     }
     
-    /*
+    
     public void maintainEncoders() {
     	double leftInches = this.leftEncoder.getNetInchesTraveled() - this.leftEncoderReferencePoint;
     	double rightInches = this.rightEncoder.getNetInchesTraveled() - this.rightEncoderReferencePoint;
@@ -432,7 +441,7 @@ public class RavenTank {
     	this.netInchesTraveled = (leftInches + rightInches) / 2;
 		
 		System.out.println("ME NIT: " + this.netInchesTraveled);
-    }*/
+    }
     
     public double getPowerCoefficient() {
     	double decelerationRangeInches = Calibrations.decelerationInchesPerMotorOutputMagnitude * this.automatedDrivingSpeed;

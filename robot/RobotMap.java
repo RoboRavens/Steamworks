@@ -20,15 +20,14 @@ public class RobotMap {
 	public static final int fuelIntakeMotor2 = 2;
 	*/
 	
-	
-	// TEMPORARY TALON IDs - NEED TO BE CHANGED ONCE ALL TALONS ARE WIRED
-	public static final int fuelIntakeMotor = 3;
-	public static final int fuelIndexerMotor = 7;
-	public static final int fuelShooterMotor1 = 5;
-	public static final int fuelShooterMotor2 = 4;
-	public static final int climberMotor = 6;
-	public static final int gearCarriageMotor = 2;
-	public static final int fuelPumpMotor = 1;
+	// Talon SRX Id's 
+	public static final int fuelIntakeMotor = 1;
+	public static final int fuelPumpMotor = 2;
+	public static final int fuelIndexerMotor = 3;
+	public static final int fuelShooterMotorLead = 4;
+	public static final int fuelShooterMotorFollower = 5;
+	public static final int gearCarriageMotor = 6;
+	public static final int climberMotor = 7;
 	
 	// Sensors
 	public static final int gearCarriageExtensionLimit = 4;

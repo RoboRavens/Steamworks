@@ -3,7 +3,6 @@ package org.usfirst.frc.team1188.robot.subsystems;
 import org.usfirst.frc.team1188.robot.Calibrations;
 import org.usfirst.frc.team1188.robot.commands.fuelpump.*;
 import com.ctre.CANTalon;
-import com.ctre.CANTalon.TalonControlMode;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -26,12 +25,15 @@ public class FuelPump extends Subsystem {
     // As far as I can tell, speed is in units of "position change per 10ms",
     // where position is "encoder ticks". So encoder ticks per 10ms.
     // So speed is units of "100 encoder ticks per second."
-    public void setToSpeed() {
+    /*
+     
+     public void setToSpeed() {
     	TalonControlMode controlMode;
     	controlMode = TalonControlMode.Speed;
     	pumpMotor.changeControlMode(controlMode);
     	pumpMotor.set(5);
     }
+*/
     
     public void reverse() {
     	this.set(-1 * Calibrations.FuelPumpPowerMagnitude);
@@ -42,7 +44,20 @@ public class FuelPump extends Subsystem {
     }
     
     public void set(double magnitude){
-    	pumpMotor.set(magnitude);
+    	// By default, 1 goes backwards and -1 goes forwards, so reverse the power.
+    	pumpMotor.set(-1 * magnitude);
+    }
+    
+    public int getRpm() {
+    	System.out.println("Fuel pump encoder velocity: " + pumpMotor.getEncVelocity());
+    	return pumpMotor.getEncVelocity();
+    }
+    
+    public void setToSpeed(int speed) {/*
+    	this.pumpMotor.changeControlMode(CANTalon.TalonControlMode.Speed);
+    	this.pumpMotor.setP(.5);
+    	this.pumpMotor.set(2000);
+    	*/
     }
 }
 

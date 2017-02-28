@@ -1,14 +1,77 @@
 package org.usfirst.frc.team1188.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
 public class OI {
 	Joystick driveController;
 	Joystick operationController;
 	
+	// Fuel Intake
+	public Button fuelIntakeCollectButton;
+	public Button fuelIntakeReverseButton;
+	
+	// Fuel Pump
+	public Button fuelPumpPumpStaggeredButton;
+	public Button fuelPumpReverseButton;
+	public Button fuelPumpOverrideShooterIsSpinningButton;
+	
+	// Shooter
+	public Button shooterRevButton;
+	public Button shooterOverrideRpmButton;
+	
+	// Climber
+	public Button climberClimbButton;
+	public Button climberOverrideStallProtectionButton;
+	public Button climberOverrideClimberDirectionButton;
+	
+	// Gear Intake
+	public Button gearIntakeExtendButton;
+	public Button gearIntakeRetractButton;
+	
+	// Gear Carriage
+	public Button gearCarriageExtendButton;
+	public Button gearCarriageRetractButton;
+	public Button gearCarriageOverrideExtensionLimitButton;
+	public Button gearCarriageOverrideRetractionLimitButton;
+	
+	
 	public OI(Joystick driveController, Joystick operationController) {
 		this.driveController = driveController;
 		this.operationController = operationController;
+		
+		initializeButtons();
+	}
+	
+	protected void initializeButtons() {
+		// Fuel Intake
+		fuelIntakeCollectButton = new JoystickButton(operationController, ControlsMap.fuelIntakeCollectButton);
+		fuelIntakeReverseButton = new JoystickButton(operationController, ControlsMap.fuelIntakeReverseButton);
+		
+		// Fuel Pump
+		fuelPumpPumpStaggeredButton = new JoystickButton(operationController, ControlsMap.fuelPumpPumpButton);
+		fuelPumpReverseButton = new JoystickButton(operationController, ControlsMap.fuelPumpReverseButton);
+		fuelPumpOverrideShooterIsSpinningButton = new JoystickButton(operationController, ControlsMap.fuelPumpOverrideShooterIsSpinningButton);
+		
+		// Shooter
+		shooterRevButton = new JoystickButton(operationController, ControlsMap.shooterRevButton);
+		shooterOverrideRpmButton = new JoystickButton(operationController, ControlsMap.shooterOverrideShootButton);
+
+		// Climber	
+		climberClimbButton = new JoystickButton(operationController, ControlsMap.climberClimbButton);
+		climberOverrideStallProtectionButton = new JoystickButton(operationController, ControlsMap.climberOverrideStallProtectionButton);
+		climberOverrideClimberDirectionButton = new JoystickButton(operationController, ControlsMap.climberOverrideClimberDirectionButton);
+		
+		// Gear Intake
+		gearIntakeExtendButton = new JoystickButton(operationController, ControlsMap.gearIntakeExtendButton);
+		gearIntakeRetractButton = new JoystickButton(operationController, ControlsMap.gearIntakeRetractButton);
+		
+		// Gear Carriage
+		gearCarriageExtendButton = new JoystickButton(operationController, ControlsMap.gearCarriageExtendButton);
+		gearCarriageRetractButton = new JoystickButton(operationController, ControlsMap.gearCarriageRetractButton);
+		gearCarriageOverrideExtensionLimitButton = new JoystickButton(operationController, ControlsMap.gearCarriageOverrideExtensionLimitButton);
+		gearCarriageOverrideRetractionLimitButton = new JoystickButton(operationController, ControlsMap.gearCarriageOverrideRetractionLimitButton);
 	}
 	
 	// Shifters
