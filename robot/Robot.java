@@ -1,10 +1,12 @@
 
 package org.usfirst.frc.team1188.robot;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
@@ -83,7 +85,17 @@ public class Robot extends IterativeRobot {
 	
 	Timer autonomousTimer = new Timer();
 	String autoFromDashboard;
-	
+
+  Relay leds = new Relay(1);
+  CameraServer server;
+	public Robot() {
+		server = CameraServer.getInstance();
+		
+		// server.setSize(server.kSize640x480);
+		
+		server.startAutomaticCapture();
+		
+	}
 	@Override
 	public void robotInit() {
 		 driverStation = DriverStation.getInstance();
@@ -213,12 +225,14 @@ public class Robot extends IterativeRobot {
 			driveTrain.ravenTank.shiftToHighGear();
 		}
 		
-		if (oi.getDriveCutPowerMode()) {
-			driveTrain.ravenTank.setCutPower(true);
-		}
-		else {
-			driveTrain.ravenTank.setCutPower(false);
-		}		
+    if (driveTrain.ravenTank.userControlOfCutPower) {
+      if (oi.getDriveCutPowerMode()) {
+        driveTrain.ravenTank.setCutPower(true);
+      }
+      else {
+        driveTrain.ravenTank.setCutPower(false);
+      }		
+    }
 		
 		// Fuel Intake
 		oi.fuelIntakeCollectButton.whileHeld(new FuelIntakeCollect(fuelIntake));

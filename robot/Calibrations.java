@@ -57,7 +57,10 @@ public final class Calibrations {
 	// Fuel pump
 	public static double fuelPumpMinimumForwardPumpSeconds = .5;
 	public static double fuelPumpMinimumBackwardPumpSeconds = .3;
-	public static int fuelPumpStallRpm = 30;
+	public static int fuelPumpStallRpm = 100;
+  
+  //camera
+	public static final int cameraQuality = 50;
 	
 	// Autonomous Modes
 	public static final String AutonomousGearToMiddleLift = "GEARMID";
@@ -75,4 +78,5 @@ public final class Calibrations {
 	// Autonomous mode - cross base line
 	public static final double AutonomousCrossBaseLineDriveForwardInches = 120;
 	public static final double AutonomousCrossBaselineDriveForwardPowerMagnitude = .5;
+  
 }

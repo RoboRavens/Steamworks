@@ -3,14 +3,17 @@ package org.usfirst.frc.team1188.robot.subsystems;
 import org.usfirst.frc.team1188.robot.Calibrations;
 import org.usfirst.frc.team1188.robot.commands.fuelpump.*;
 import com.ctre.CANTalon;
-
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class FuelPump extends Subsystem {
 	CANTalon pumpMotor;
+	public Timer pumpTimer;
+	public boolean pumpingForward = true;
 
 	public FuelPump(CANTalon pumpMotor) {
 		this.pumpMotor = pumpMotor; 
+		this.pumpTimer = new Timer();
 	}
 	
     public void initDefaultCommand() {

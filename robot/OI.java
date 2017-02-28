@@ -105,6 +105,7 @@ public class OI {
 		return operationController.getRawButton(ControlsMap.shooterShootButton);
 	}
 	
+	/*
 	public boolean getShooterStopButton() {
 		return operationController.getRawButton(ControlsMap.shooterStopButton);
 	}
@@ -112,6 +113,7 @@ public class OI {
 	public boolean getShooterOverrideShootButton() {
 		return operationController.getRawButton(ControlsMap.shooterOverrideShootButton);
 	}
+	*/
 	
 	// Gear intake/placement
 	public boolean getGearIntakeExtendButton() {

@@ -3,30 +3,29 @@ package org.usfirst.frc.team1188.robot.commands.fuelpump;
 import org.usfirst.frc.team1188.robot.Calibrations;
 import org.usfirst.frc.team1188.robot.subsystems.FuelPump;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class FuelPumpPumpStaggered extends Command {
 	FuelPump fuelPump;
-	Timer pumpTimer;
-	boolean pumpingForward;
 	
     public FuelPumpPumpStaggered(FuelPump fuelPump) {
         this.fuelPump = fuelPump;
         requires(fuelPump);
-        
-        pumpTimer = new Timer();
+
+
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	pumpingForward = true;
-    	pumpTimer.start();
+
+    	if (fuelPump.pumpTimer.get() == 0) {
+    		fuelPump.pumpTimer.start();
+    	}
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	if (pumpingForward) {
+    	if (fuelPump.pumpingForward) {
     		pumpForward();
     	}
     	else {
@@ -35,18 +34,22 @@ public class FuelPumpPumpStaggered extends Command {
     }
     	
 	protected void pumpForward() {
+		System.out.println("Pump timer: " + fuelPump.pumpTimer.get());
+		
 		// For the first half second, ALWAYS pump forward.
-		if (pumpTimer.get() < .5) {
+		if (fuelPump.pumpTimer.get() < .5) {
+			System.out.println("less than a half second, pumping forward");
 			fuelPump.pump();
 			
 			return;
 		}
 		
 		// If after the first half second, the pump is stalled, pump backward.
-		if (fuelPump.getRpm() < Calibrations.fuelPumpStallRpm) {
-			pumpingForward = false;
-			pumpTimer.reset();
-			pumpTimer.start();
+		if (Math.abs(fuelPump.getRpm()) < Calibrations.fuelPumpStallRpm) {
+			System.out.println("stall, pump backwards");
+			fuelPump.pumpingForward = false;
+			fuelPump.pumpTimer.reset();
+			fuelPump.pumpTimer.start();
 			fuelPump.reverse();
 		}
 	}
@@ -54,13 +57,13 @@ public class FuelPumpPumpStaggered extends Command {
 	protected void pumpBackward() {
 		// When pumping backward, simply run the pump for a period of time.
 		// Then try forward again.
-		if (pumpTimer.get() < Calibrations.fuelPumpMinimumBackwardPumpSeconds) {
+		if (fuelPump.pumpTimer.get() < Calibrations.fuelPumpMinimumBackwardPumpSeconds) {
 			fuelPump.reverse();
 		}
 		else {
-			pumpingForward = true;
-			pumpTimer.reset();
-			pumpTimer.start();
+			fuelPump.pumpingForward = true;
+			fuelPump.pumpTimer.reset();
+			fuelPump.pumpTimer.start();
 			fuelPump.pump();
 		}
 	}

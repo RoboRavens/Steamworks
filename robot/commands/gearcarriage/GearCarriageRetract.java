@@ -18,7 +18,6 @@ public class GearCarriageRetract extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	System.out.println(" Retracting gear carriage.");
     	if (gearCarriage.getIsAtRetractionLimit() == false) {
         	gearCarriage.retract();
     	}

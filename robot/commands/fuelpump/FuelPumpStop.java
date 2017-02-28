@@ -18,6 +18,9 @@ public class FuelPumpStop extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	fuelPump.stop();
+      fuelPump.pumpingForward = true;
+    	fuelPump.pumpTimer.stop();
+    	fuelPump.pumpTimer.reset();
     }
 
     // Make this return true when this Command no longer needs to run execute()

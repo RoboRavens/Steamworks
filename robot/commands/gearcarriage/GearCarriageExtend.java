@@ -31,6 +31,8 @@ public class GearCarriageExtend extends Command {
     	if (gearCarriage.getIsAtExensionLimit() == false) {
         	gearCarriage.extend();
         	driveTrain.ravenTank.setCutPower(true);
+        	driveTrain.ravenTank.userControlOfCutPower = false;
+        	System.out.println("Setting to cut power.");
     	}
     }
 

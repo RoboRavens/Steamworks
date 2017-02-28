@@ -44,6 +44,7 @@ public class RavenTank {
 	protected boolean turning = false;
 	protected boolean waiting = false;
 	
+	public boolean userControlOfCutPower = true;
 
 	RavenTalon driveLeft1 = new RavenTalon(RobotMap.leftDriveChannel1, slewRate);
 	RavenTalon driveRight1 = new RavenTalon(RobotMap.rightDriveChannel1, slewRate);
