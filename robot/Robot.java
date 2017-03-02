@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
@@ -73,41 +74,36 @@ public class Robot extends IterativeRobot {
 	public final FuelIntake fuelIntake = new FuelIntake(fuelIntakeMotor);
 	public final Climber climber = new Climber(climberMotor);
 	public final FuelPump fuelPump = new FuelPump(fuelPumpMotor);
-	public final FuelShooter fuelShooter = new FuelShooter(fuelShooterMotorLead, fuelShooterMotorFollower);
 	public final FuelIndexer fuelIndexer = new FuelIndexer(fuelIndexerMotor);
+	public final FuelShooter fuelShooter = new FuelShooter(fuelShooterMotorLead, fuelShooterMotorFollower, fuelIndexer, fuelPump);
 	
-	/*
-	Encoder leftEncoder = new Encoder(0,1);
-	Encoder rightEncoder = new Encoder(2,3);
-	*/
+	public boolean isRedAlliance;
 	
-	boolean hasDriven = false;
+	// boolean hasDriven = false;
 	
 	Timer autonomousTimer = new Timer();
 	String autoFromDashboard;
 
-  Relay leds = new Relay(1);
-  CameraServer server;
-	public Robot() {
-		server = CameraServer.getInstance();
-		
-		// server.setSize(server.kSize640x480);
-		
+ 	Relay leds = new Relay(1);
+ 	CameraServer server;
+	
+ 	public Robot() {
+		server = CameraServer.getInstance();		
 		server.startAutomaticCapture();
-		
 	}
+ 	
 	@Override
 	public void robotInit() {
-		 driverStation = DriverStation.getInstance();
-		//myDrive = new RobotDrive(0,1,2,3);
-		
+		driverStation = DriverStation.getInstance();
 		oi = new OI(driveController, operationController);
-		// chooser.addObject("My Auto", new MyAutoCommand());
+		
 		SmartDashboard.putData("Auto mode", chooser);
 	}
 
 	@Override
-	public void disabledInit() {}
+	public void disabledInit() {
+		
+	}
 
 	@Override
 	public void disabledPeriodic() {
@@ -116,6 +112,25 @@ public class Robot extends IterativeRobot {
 		autoFromDashboard = SmartDashboard.getString("DB/String 0", "myDefaultData");
 		
 		outputAutoModeToDashboardStringOne(autoFromDashboard);
+		
+		Alliance alliance = driverStation.getAlliance();
+		
+		String allianceString = "";
+		
+		if (alliance.compareTo(Alliance.Blue) == 0) {
+			allianceString = "Blue alliance";
+			this.isRedAlliance = false;
+		}
+		else if (alliance.compareTo(Alliance.Red) == 0) {
+			allianceString = "Red alliance";
+			this.isRedAlliance = true;
+		}
+		else {
+			allianceString = "Alliance not identified.";
+			this.isRedAlliance = false;
+		}
+	
+		SmartDashboard.putString("DB/String 4", allianceString);
 	}
 	
 	public void outputAutoModeToDashboardStringOne(String autoMode) {
@@ -134,6 +149,23 @@ public class Robot extends IterativeRobot {
 				break;
 			case Calibrations.AutonomousShootHighGoal:
 				autonomousModeName += "Shoot high goals.";
+				
+				if (this.isRedAlliance) {
+					autonomousModeName += " Red.";;
+				}
+				else {
+					autonomousModeName += " Blue.";
+				}
+				
+				break;
+			case Calibrations.AutonomousRankingPoint:
+				autonomousModeName += "Ranking point.";
+				if (this.isRedAlliance) {
+					autonomousModeName += " Red.";;
+				}
+				else {
+					autonomousModeName += " Blue.";
+				}
 				break;
 			case Calibrations.AutonomousCrossBaseLine:
 				autonomousModeName += "Driving forward to cross base line.";
@@ -145,6 +177,18 @@ public class Robot extends IterativeRobot {
 		}
 		
 		putSmartDashboardAutonomousMode(autonomousModeConfirmation, autonomousModeName);
+	}
+	
+	public boolean isRedAlliance() {
+		boolean isRedAlliance = false;
+
+		Alliance alliance = driverStation.getAlliance();
+		
+		if (alliance.compareTo(Alliance.Red) == 0) {
+			isRedAlliance = true;
+		}
+		
+		return isRedAlliance;
 	}
 	
 	
@@ -162,7 +206,21 @@ public class Robot extends IterativeRobot {
 				autonomousCommand = new AutonomousPlaceGearOnRightLift(driveTrain, gearCarriage);
 				break;
 			case Calibrations.AutonomousShootHighGoal:
-				autonomousCommand = new AutonomousShootHighGoal(driveTrain, fuelPump, fuelIndexer, fuelShooter);
+				if (this.isRedAlliance) {
+					autonomousCommand = new AutonomousShootHighGoalCrossBaseLineRedAlliance(driveTrain, fuelPump, fuelIndexer, fuelShooter);
+				}
+				else {
+					autonomousCommand = new AutonomousShootHighGoalCrossBaseLineBlueAlliance(driveTrain, fuelPump, fuelIndexer, fuelShooter);
+				}
+				break;
+			case Calibrations.AutonomousRankingPoint:
+				if (this.isRedAlliance) {
+					autonomousCommand = new AutonomousCollectHopperShootGoalsRedAlliance(driveTrain, fuelPump, fuelIndexer, fuelShooter);
+				}
+				else {
+					autonomousCommand = new AutonomousCollectHopperShootGoalsBlueAlliance(driveTrain, fuelPump, fuelIndexer, fuelShooter);
+				}
+				
 				break;
 			case Calibrations.AutonomousCrossBaseLine:
 				autonomousCommand = new AutonomousCrossBaseLine(driveTrain);
@@ -179,7 +237,7 @@ public class Robot extends IterativeRobot {
 	
 	public void autonomousInit() {
 		// Zero the gyro, grab the selected autonomous mode, and get to work.
-		driveTrain.ravenTank.setGyroZero();
+		driveTrain.ravenTank.setGyroTargetHeadingToCurrentHeading();
 		autonomousCommand = getAutonomousCommand();
 		
 		if (autonomousCommand != null) {
@@ -195,6 +253,8 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopInit() {
+		driveTrain.ravenTank.setGyroTargetHeadingToCurrentHeading();
+		
 		// Cancel the autonomous command in the case that it did not terminate.
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();	
@@ -210,6 +270,7 @@ public class Robot extends IterativeRobot {
 
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
+		System.out.println("TELEOP DIAGNOSTICS");
 		diagnostics.outputTeleopDiagnostics();
 		
 		runOperatorControls();
@@ -225,14 +286,14 @@ public class Robot extends IterativeRobot {
 			driveTrain.ravenTank.shiftToHighGear();
 		}
 		
-    if (driveTrain.ravenTank.userControlOfCutPower) {
-      if (oi.getDriveCutPowerMode()) {
-        driveTrain.ravenTank.setCutPower(true);
-      }
-      else {
-        driveTrain.ravenTank.setCutPower(false);
-      }		
-    }
+	    if (driveTrain.ravenTank.userControlOfCutPower) {
+	      if (oi.getDriveCutPowerMode()) {
+	        driveTrain.ravenTank.setCutPower(true);
+	      }
+	      else {
+	        driveTrain.ravenTank.setCutPower(false);
+	      }		
+	    }
 		
 		// Fuel Intake
 		oi.fuelIntakeCollectButton.whileHeld(new FuelIntakeCollect(fuelIntake));
@@ -245,7 +306,9 @@ public class Robot extends IterativeRobot {
 		oi.fuelPumpReverseButton.whileHeld(new FuelPumpReverse(fuelPump));
 		
 		// Shooter
-		oi.shooterRevButton.whileHeld(new FuelShooterRev(fuelShooter));
+		// oi.shooterRevButton.whileHeld(new FuelShooterRev(fuelShooter));
+		
+		oi.shooterShootButton.whileHeld(new FuelShooterShoot(fuelShooter, fuelIndexer, fuelPump));
 		
 		// Climber
 		oi.climberClimbButton.whileHeld(new ClimberClimb(climber));

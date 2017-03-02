@@ -52,7 +52,7 @@ public class FuelPump extends Subsystem {
     }
     
     public int getRpm() {
-    	System.out.println("Fuel pump encoder velocity: " + pumpMotor.getEncVelocity());
+    	// System.out.println("Fuel pump encoder velocity: " + pumpMotor.getEncVelocity());
     	return pumpMotor.getEncVelocity();
     }
     

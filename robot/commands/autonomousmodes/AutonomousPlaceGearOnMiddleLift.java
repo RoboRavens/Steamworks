@@ -2,6 +2,7 @@ package org.usfirst.frc.team1188.robot.commands.autonomousmodes;
 
 import org.usfirst.frc.team1188.robot.Calibrations;
 import org.usfirst.frc.team1188.robot.commands.drivetrain.DriveTrainDriveInches;
+import org.usfirst.frc.team1188.robot.commands.gearcarriage.GearCarriageAutoPlace;
 import org.usfirst.frc.team1188.robot.commands.gearcarriage.GearCarriageExtend;
 import org.usfirst.frc.team1188.robot.commands.gearcarriage.GearCarriageRetract;
 import org.usfirst.frc.team1188.robot.subsystems.DriveTrain;

@@ -20,6 +20,7 @@ public class OI {
 	// Shooter
 	public Button shooterRevButton;
 	public Button shooterOverrideRpmButton;
+	public Button shooterShootButton;
 	
 	// Climber
 	public Button climberClimbButton;
@@ -57,6 +58,7 @@ public class OI {
 		// Shooter
 		shooterRevButton = new JoystickButton(operationController, ControlsMap.shooterRevButton);
 		shooterOverrideRpmButton = new JoystickButton(operationController, ControlsMap.shooterOverrideShootButton);
+		shooterShootButton = new JoystickButton(operationController, ControlsMap.shooterShootButton);
 
 		// Climber	
 		climberClimbButton = new JoystickButton(operationController, ControlsMap.climberClimbButton);
@@ -65,7 +67,7 @@ public class OI {
 		
 		// Gear Intake
 		gearIntakeExtendButton = new JoystickButton(operationController, ControlsMap.gearIntakeExtendButton);
-		gearIntakeRetractButton = new JoystickButton(operationController, ControlsMap.gearIntakeRetractButton);
+		// gearIntakeRetractButton = new JoystickButton(operationController, ControlsMap.gearIntakeRetractButton);
 		
 		// Gear Carriage
 		gearCarriageExtendButton = new JoystickButton(operationController, ControlsMap.gearCarriageExtendButton);
@@ -76,7 +78,9 @@ public class OI {
 	
 	// Shifters
 	public boolean getDriveShiftLowButton() {
-		return driveController.getRawButton(ControlsMap.driveShiftToLowGearButton);
+		boolean shiftLow = driveController.getRawButton(ControlsMap.driveShiftToLowGearButton) || operationController.getRawButton(ControlsMap.operationShiftToLowGearButton);  
+		
+		return shiftLow; 
 	}
 	
 	public boolean getDriveShiftHighButton() {
@@ -120,9 +124,11 @@ public class OI {
 		return operationController.getRawButton(ControlsMap.gearIntakeExtendButton);
 	}
 	
+	/*
 	public boolean getGearIntakeRetractButton() {
 		return operationController.getRawButton(ControlsMap.gearIntakeRetractButton);
 	}
+	*/
 	
 	public boolean getGearCarriageExtendButton() {
 		return operationController.getRawButton(ControlsMap.gearCarriageExtendButton);

@@ -17,6 +17,7 @@ public class FuelPumpPumpStaggered extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	// System.out.print("PUMP INIT");
 
     	if (fuelPump.pumpTimer.get() == 0) {
     		fuelPump.pumpTimer.start();
@@ -34,11 +35,11 @@ public class FuelPumpPumpStaggered extends Command {
     }
     	
 	protected void pumpForward() {
-		System.out.println("Pump timer: " + fuelPump.pumpTimer.get());
+		// System.out.println("Pump timer: " + fuelPump.pumpTimer.get());
 		
 		// For the first half second, ALWAYS pump forward.
 		if (fuelPump.pumpTimer.get() < .5) {
-			System.out.println("less than a half second, pumping forward");
+			// System.out.println("less than a half second, pumping forward");
 			fuelPump.pump();
 			
 			return;
@@ -46,7 +47,7 @@ public class FuelPumpPumpStaggered extends Command {
 		
 		// If after the first half second, the pump is stalled, pump backward.
 		if (Math.abs(fuelPump.getRpm()) < Calibrations.fuelPumpStallRpm) {
-			System.out.println("stall, pump backwards");
+			// System.out.println("stall, pump backwards");
 			fuelPump.pumpingForward = false;
 			fuelPump.pumpTimer.reset();
 			fuelPump.pumpTimer.start();

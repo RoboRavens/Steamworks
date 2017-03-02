@@ -20,12 +20,16 @@ public class RavenTank {
     AHRS orientationGyro = new AHRS(SPI.Port.kMXP);
     
     AHRS.BoardYawAxis boardYawAxis;
+    double lastAccelerationX;
+    double lastAccelerationY;
+    double highestJerkX;
+    double highestJerkY;
     
     protected int driveMode;
 	protected int gyroMode;
 	protected boolean cutPower;
-	protected double gyroZero;
-	protected double orientation = 0;
+	protected double gyroTargetHeading;
+	// protected double orientation = 0;
 	protected double slewRate = Calibrations.slewRate;
 	
 	// Joystick calibrationStick = new Joystick(RobotMap.calibrationJoystick);
@@ -51,6 +55,8 @@ public class RavenTank {
 	
 	protected Solenoid shiftToLowGearSolenoid;
 	protected Solenoid shiftToHighGearSolenoid;
+	
+	protected boolean isInHighGear = Calibrations.DriveTrainStartingIsInHighGear;
 	
 	public RavenTank(Robot robot) {
 		initializeRavenTank(robot);
@@ -85,7 +91,7 @@ public class RavenTank {
 		setCutPower(false);
 				
 		setGyroMode(Calibrations.defaultGyroMode);
-		gyroZero = setGyroZero();
+		gyroTargetHeading = setGyroTargetHeadingToCurrentHeading();
 	}
 	
 	public void setDriveMode(int driveMode) {
@@ -173,6 +179,55 @@ public class RavenTank {
       
 		this.driveLeftSide(leftFinal);
     	this.driveRightSide(rightFinal);
+    	
+    	if (detectCollisions() == true) {
+    		shiftToLowGear();
+    	}
+    }
+    
+    public boolean detectCollisions() {
+    	boolean collisionDetected = false;
+    	
+    	double currentAccelerationX = orientationGyro.getWorldLinearAccelX();
+    	double currentAccelerationY = orientationGyro.getWorldLinearAccelY();
+    	
+    	double currentJerkX = currentAccelerationX - lastAccelerationX;
+    	double currentJerkY = currentAccelerationY - lastAccelerationY;
+    	
+    	lastAccelerationX = currentAccelerationX;
+    	lastAccelerationY = currentAccelerationY;
+    	
+    	if (currentJerkX > highestJerkX) {
+    		highestJerkX = currentJerkX;
+    	}
+    	
+    	if (currentJerkY > highestJerkY) {
+    		highestJerkY = currentJerkY;
+    	}
+    	
+    	if (Math.abs(currentJerkX) > Calibrations.DriveTrainCollisionJerkThreshold) {
+    		collisionDetected = true;
+    	}
+    	
+    	if (Math.abs(currentJerkY) > Calibrations.DriveTrainCollisionJerkThreshold) {
+    		collisionDetected = true;
+    	}
+    	
+    	return collisionDetected;
+    }
+    
+    public void outputJerk() {
+    	double currentAccelerationX = orientationGyro.getWorldLinearAccelX();
+    	double currentAccelerationY = orientationGyro.getWorldLinearAccelY();
+    	
+    	double currentJerkX = currentAccelerationX - lastAccelerationX;
+    	double currentJerkY = currentAccelerationY - lastAccelerationY;
+    	
+    	System.out.println("X Jerk: " + currentJerkX + " Y Jerk: " + currentJerkY);
+    }
+    
+    public void outputHighestJerk() {
+    	System.out.println("Highest X Jerk: " + highestJerkX + " Highest Y Jerk: " + highestJerkY);
     }
     
     public void driveLeftSide(double magnitude) {
@@ -189,12 +244,14 @@ public class RavenTank {
     }
     
     public void shiftToLowGear() {
+    	this.isInHighGear = false;
     	shiftToLowGearSolenoid.set(true);
     	shiftToHighGearSolenoid.set(false);
     
     }
     
     public void shiftToHighGear() {
+    	this.isInHighGear = true;
     	shiftToHighGearSolenoid.set(true);
     	shiftToLowGearSolenoid.set(false);
     }
@@ -227,19 +284,21 @@ public class RavenTank {
     	return orientationGyro.getAngle();
     }
     
+    /*
     public void resetDriveGyro() {
     	orientationGyro.reset();
     }
+    */
     
-    public double setGyroZero(){    	
-    	this.gyroZero = orientationGyro.getAngle();
+    public double setGyroTargetHeadingToCurrentHeading(){    	
+    	this.gyroTargetHeading = orientationGyro.getAngle();
     	
-    	return gyroZero;
+    	return gyroTargetHeading;
     }
     
-    public double setGyroZero(double angle){
-    	this.gyroZero += angle;
-    	return gyroZero;
+    public double setGyroTargetHeading(double angle){
+    	gyroTargetHeading = angle;
+    	return gyroTargetHeading;
     }
 
     private boolean adjustGyroDueToTimer() {
@@ -264,7 +323,7 @@ public class RavenTank {
     	} 
     	
     	if (Math.abs(turn) > 0 || this.adjustGyroDueToTimer()) {
-        	this.setGyroZero();
+        	this.setGyroTargetHeadingToCurrentHeading();
         	
         	if (Math.abs(turn) > 0) {
 	        	this.gyroCooldownTimer.reset();
@@ -283,7 +342,7 @@ public class RavenTank {
     	}
     	    	
     	// Mod to eliminate extra rotations.
-    	double gyroAdjust = (Math.round(orientationGyro.getAngle()) - gyroZero) % 360;
+    	double gyroAdjust = (Math.round(orientationGyro.getAngle()) - gyroTargetHeading) % 360;
     	
     	// This snippet ensures that the robot will spin in the fastest direction to zero
     	// if it ends up more than 180 degrees off of intention.
@@ -323,8 +382,7 @@ public class RavenTank {
     */
     
     public void turnRelativeDegrees(double degrees) {
-    	this.setGyroZero(this.gyroZero + degrees);
-    	this.automatedDrivingEnabled = true;
+    	this.setGyroTargetHeading(this.gyroTargetHeading + degrees);
     }
     
     public void enableAutomatedDriving(int direction, double speed) {
@@ -393,16 +451,22 @@ public class RavenTank {
     }
     
     public void maintainStateTurning() {
-    	if (Math.abs(gyroZero - orientationGyro.getAngle()) < 3) {
+    	if (Math.abs(gyroTargetHeading - orientationGyro.getAngle()) < 3) {
     		automatedDrivingEnabled = false;
     		turning = false;
     	}
     	
     }
     
+    public double getCurrentHeading() {
+    	return orientationGyro.getAngle();
+    }
+    
+    /*
     public double getGyroAngle() {    
     	return orientationGyro.getAngle();    
     }
+    */
     
     public double getNetInchesTraveled() {
     	double leftInches = this.leftEncoder.getNetInchesTraveled();

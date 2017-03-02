@@ -11,6 +11,7 @@ public class DriveTrainDriveInches extends Command {
 	Robot robot;
 	DriveTrain driveTrain;
 	RavenTank ravenTank;
+	
 	double powerMagnitude;
 	double totalInchesToTravel;
 	double driveTrainNetInchesTraveledAtStart;

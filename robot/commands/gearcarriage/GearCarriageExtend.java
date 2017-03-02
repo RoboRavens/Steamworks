@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1188.robot.commands.gearcarriage;
 
+import org.usfirst.frc.team1188.ravenhardware.RavenTank;
 import org.usfirst.frc.team1188.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team1188.robot.subsystems.GearCarriage;
 
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 public class GearCarriageExtend extends Command {
 	GearCarriage gearCarriage;
 	DriveTrain driveTrain;
+	RavenTank ravenTank;
 	Timer safetyTimer;
 	
     public GearCarriageExtend(GearCarriage gearCarriage, DriveTrain driveTrain) {
@@ -17,6 +19,7 @@ public class GearCarriageExtend extends Command {
     	requires(gearCarriage);
     	
     	this.driveTrain = driveTrain;
+    	this.ravenTank = driveTrain.ravenTank;
     	this.safetyTimer = new Timer();
     }
 
@@ -47,10 +50,13 @@ public class GearCarriageExtend extends Command {
     // Called once after isFinished returns true
     protected void end() {
     	gearCarriage.stop();
+    	ravenTank.setCutPower(false);
+    	ravenTank.userControlOfCutPower = true;
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	end();
     }
 }
