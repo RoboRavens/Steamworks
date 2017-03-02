@@ -33,6 +33,13 @@ public class RobotMap {
 	public static final int gearCarriageExtensionLimit = 4;
 	public static final int gearCarriageRetractionLimit = 5;
 	
-  // Camera
+	// Camera
 	public static final String cameraName = "cam0";
+	
+	// Relays
+	public static final int intakeReadyLightRelay = 0;
+	public static final int carriageStalledLightRelay = 1;
+	public static final int carriageExtendedLightRelay = 2;
+	public static final int underglowLightRelay = 3;
+	public static final int flashlightRelay = 3;
 }

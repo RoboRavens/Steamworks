@@ -17,7 +17,15 @@ public class GearCarriageStop extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	gearCarriage.stop();
+    	// Re-retracting the carriage doesn't do anything if the carriage
+    	// is at the limit, but if it ever drifts from the limit, this will
+    	// restore it to that position.
+    	if (gearCarriage.retractedState) {
+    		gearCarriage.retract();
+    	}
+    	else {
+    		gearCarriage.stop();
+    	}
     }
 
     // Make this return true when this Command no longer needs to run execute()

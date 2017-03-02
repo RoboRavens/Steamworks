@@ -1,6 +1,8 @@
 package org.usfirst.frc.team1188.robot.commands.gearcarriage;
 
+import org.usfirst.frc.team1188.ravenhardware.Lighting;
 import org.usfirst.frc.team1188.ravenhardware.RavenTank;
+import org.usfirst.frc.team1188.robot.Calibrations;
 import org.usfirst.frc.team1188.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team1188.robot.subsystems.GearCarriage;
 
@@ -13,37 +15,56 @@ public class GearCarriageExtend extends Command {
 	DriveTrain driveTrain;
 	RavenTank ravenTank;
 	Timer safetyTimer;
+	Lighting stalledLighting;
+	Lighting successLighting;
 	
-    public GearCarriageExtend(GearCarriage gearCarriage, DriveTrain driveTrain) {
+    public GearCarriageExtend(GearCarriage gearCarriage, DriveTrain driveTrain, Lighting stalledLighting, Lighting successLighting) {
     	this.gearCarriage = gearCarriage;
     	requires(gearCarriage);
     	
     	this.driveTrain = driveTrain;
     	this.ravenTank = driveTrain.ravenTank;
     	this.safetyTimer = new Timer();
+    	
+    	this.stalledLighting = stalledLighting;
+    	this.successLighting = successLighting;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
     	safetyTimer.start();
+    	this.stalledLighting.turnOff();
+    	this.successLighting.turnOff();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	System.out.println(" extending gear carraige.");
+    	// System.out.println(" extending gear carriage.");
     	if (gearCarriage.getIsAtExensionLimit() == false) {
         	gearCarriage.extend();
         	driveTrain.ravenTank.setCutPower(true);
         	driveTrain.ravenTank.userControlOfCutPower = false;
-        	System.out.println("Setting to cut power.");
+        	// System.out.println("Setting to cut power.");
+    	}
+    	else {
+    		successLighting.turnOn();
     	}
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
     	boolean isFinished = false;
-    	isFinished = safetyTimer.get() >= 1 || gearCarriage.getIsAtExensionLimit();
     	
+    	if (gearCarriage.getIsAtExensionLimit()) {
+    		isFinished = true;
+    		successLighting.turnOn();
+    	}
+    	
+    	if (safetyTimer.get() >= Calibrations.GearCarriageStallTimerSeconds) {
+    		isFinished = true;
+    		stalledLighting.turnOn();
+    	}
+    	    	
     	return isFinished;
     }
 

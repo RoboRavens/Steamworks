@@ -58,6 +58,8 @@ public class RavenTank {
 	
 	protected boolean isInHighGear = Calibrations.DriveTrainStartingIsInHighGear;
 	
+	Lighting shiftedToLowGearLighting;
+	
 	public RavenTank(Robot robot) {
 		initializeRavenTank(robot);
 	}
@@ -182,10 +184,12 @@ public class RavenTank {
     	
     	if (detectCollisions() == true) {
     		shiftToLowGear();
+    		shiftedToLowGearLighting.turnOnForSeconds(3);
     	}
     }
     
     public boolean detectCollisions() {
+    	shiftedToLowGearLighting.maintainSecondsState();
     	boolean collisionDetected = false;
     	
     	double currentAccelerationX = orientationGyro.getWorldLinearAccelX();
@@ -414,6 +418,7 @@ public class RavenTank {
     	return automatedDrivingEnabled == false;
     }
     
+    /*
     public void maintainState() {
 		// System.out.println("Gyro: " + orientationGyro.getAngle() + " Lencoder: " + this.leftEncoder.getNetInchesTraveled() + " Rencoder: " + this.rightEncoder.getNetInchesTraveled());
 		
@@ -421,12 +426,12 @@ public class RavenTank {
     	if (automatedDrivingEnabled == false) {
     		return;
     	}
-    	/*
-    	if (drivingThroughObstacle) {
-    		maintainStateDrivingThroughObstacle();
-    		return;
-    	}
-    	*/
+    	
+    	// if (drivingThroughObstacle) {
+    	// 	maintainStateDrivingThroughObstacle();
+    	//	return;
+    	// }
+    	
     	
     	if (turning) {
     		maintainStateTurning();
@@ -440,6 +445,7 @@ public class RavenTank {
     	
     	maintainStateDrivingStraight();
     }
+    */
     
     public void maintainStateWaiting() {
     	this.stop();
@@ -477,6 +483,7 @@ public class RavenTank {
     	return netInchesTraveled;
     }
     
+    /*
     public void maintainStateDrivingStraight() {
     	//this.maintainEncoders();
     	
@@ -496,6 +503,7 @@ public class RavenTank {
 
     	this.fpsTank(power, 0);
     }
+    */
     
     
     public void maintainEncoders() {
@@ -508,6 +516,7 @@ public class RavenTank {
 		System.out.println("ME NIT: " + this.netInchesTraveled);
     }
     
+    /*
     public double getPowerCoefficient() {
     	double decelerationRangeInches = Calibrations.decelerationInchesPerMotorOutputMagnitude * this.automatedDrivingSpeed;
     	
@@ -522,6 +531,7 @@ public class RavenTank {
     	
     	return powerCoefficient;
     }
+    */
     
     /*
     public void maintainStateDrivingThroughObstacle() {

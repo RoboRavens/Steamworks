@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1188.robot.commands.autonomousmodes;
 
+import org.usfirst.frc.team1188.ravenhardware.Lighting;
 import org.usfirst.frc.team1188.robot.Calibrations;
 import org.usfirst.frc.team1188.robot.commands.drivetrain.DriveTrainDriveInches;
 import org.usfirst.frc.team1188.robot.commands.drivetrain.DriveTrainTurnRelativeDegrees;
@@ -9,20 +10,35 @@ import org.usfirst.frc.team1188.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team1188.robot.subsystems.FuelIndexer;
 import org.usfirst.frc.team1188.robot.subsystems.FuelPump;
 import org.usfirst.frc.team1188.robot.subsystems.FuelShooter;
+import org.usfirst.frc.team1188.robot.subsystems.GearCarriage;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
-public class AutonomousCollectHopperShootGoalsRedAlliance extends CommandGroup {
-    public AutonomousCollectHopperShootGoalsRedAlliance(DriveTrain driveTrain, FuelPump fuelPump, FuelIndexer fuelIndexer, FuelShooter fuelShooter) {
-    	addSequential(new DriveTrainDriveInches(driveTrain, 
-    			Calibrations.AutonomousDropHopperDriveFromWallInches,
-    			Calibrations.AutonomousCrossBaselineDriveForwardPowerMagnitude,
-    			Calibrations.drivingBackward));
+/**
+ *
+ */
+public class AutonomousPlaceGearOnMiddleLiftShootHighGoalsRedAlliance extends CommandGroup {
+    public AutonomousPlaceGearOnMiddleLiftShootHighGoalsRedAlliance(DriveTrain driveTrain, GearCarriage gearCarriage, Lighting carriageStalledLighting, Lighting carriageExtendedLighting, FuelPump fuelPump, FuelIndexer fuelIndexer, FuelShooter fuelShooter) {
+    	
+    	// 162 total inches from middle lift to side of field
+    	// 90 forward, 30 back, need to move 17 more forward to re-align.
+    	
+    	addSequential(new AutonomousPlaceGearOnMiddleLift(driveTrain, gearCarriage, carriageStalledLighting, carriageExtendedLighting));
     	addSequential(new DriveTrainTurnRelativeDegrees(driveTrain, Calibrations.AutonomousDropHopperTurnToHopperDegreesRedAlliance));
     	addSequential(new DriveTrainDriveInches(driveTrain, 
-    			Calibrations.AutonomousDropHopperDriveToHopperInches,
+    			81,
     			Calibrations.AutonomousDropHopperDriveFromWallSpeed,
-    			Calibrations.drivingBackward));
+    			Calibrations.drivingForward));
+    	addSequential(new DriveTrainTurnRelativeDegrees(driveTrain, -1 * Calibrations.AutonomousDropHopperTurnToHopperDegreesRedAlliance));
+    	addSequential(new DriveTrainDriveInches(driveTrain, 
+    			17,
+    			Calibrations.AutonomousDropHopperDriveFromWallSpeed,
+    			Calibrations.drivingForward));
+    	addSequential(new DriveTrainTurnRelativeDegrees(driveTrain, Calibrations.AutonomousDropHopperTurnToHopperDegreesRedAlliance));
+    	addSequential(new DriveTrainDriveInches(driveTrain, 
+    			81,
+    			Calibrations.AutonomousDropHopperDriveFromWallSpeed,
+    			Calibrations.drivingForward));
     	addSequential(new DriveTrainTurnRelativeDegrees(driveTrain, Calibrations.AutonomousDropHopperAimAtGoalDegreesRedAlliance));
     	addSequential(new FuelShooterShootForNumberOfSeconds(fuelShooter,
     			fuelIndexer,
@@ -30,4 +46,7 @@ public class AutonomousCollectHopperShootGoalsRedAlliance extends CommandGroup {
     			Calibrations.AutonomousShootHighGoalShootingSeconds));
     	addSequential(new FuelShooterStop(fuelShooter));
     }
+    
+    
+    
 }

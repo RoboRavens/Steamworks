@@ -23,6 +23,7 @@ import org.usfirst.frc.team1188.robot.commands.fuelshooter.*;
 import org.usfirst.frc.team1188.robot.commands.gearcarriage.*;
 import org.usfirst.frc.team1188.robot.commands.gearintake.*;
 import org.usfirst.frc.team1188.robot.commands.fuelindexer.*;
+import org.usfirst.frc.team1188.ravenhardware.Lighting;
 import org.usfirst.frc.team1188.robot.commands.autonomousmodes.*;
 import org.usfirst.frc.team1188.robot.commands.climber.*;
 
@@ -39,7 +40,7 @@ import com.ctre.CANTalon;
 public class Robot extends IterativeRobot {
 	public static OI oi;
 	
-	DriverStation driverStation;
+	public DriverStation driverStation;
 
 	Diagnostics diagnostics = new Diagnostics(this);
 	
@@ -84,7 +85,21 @@ public class Robot extends IterativeRobot {
 	Timer autonomousTimer = new Timer();
 	String autoFromDashboard;
 
- 	Relay leds = new Relay(1);
+	Relay intakeReadyRelay = new Relay(RobotMap.intakeReadyLightRelay);
+	Relay carriageStalledRelay = new Relay(RobotMap.carriageStalledLightRelay);
+	Relay carriageExtendedRelay = new Relay(RobotMap.carriageExtendedLightRelay);
+	// Relay underglowRelay = new Relay(RobotMap.underglowLightRelay);
+	Relay flashlightRelay = new Relay(RobotMap.flashlightRelay);
+ 	
+	Lighting intakeReadyLighting = new Lighting(intakeReadyRelay);
+	Lighting carriageStalledLighting = new Lighting(carriageStalledRelay);
+	Lighting carriageExtendedLighting = new Lighting(carriageExtendedRelay);
+	// Lighting underglowLighting = new Lighting(underglowRelay);
+	Lighting flashlightLighting = new Lighting(flashlightRelay);
+	
+	Lights lights = new Lights(intakeReadyLighting, carriageStalledLighting, carriageExtendedLighting, this);
+	
+ 	
  	CameraServer server;
 	
  	public Robot() {
@@ -96,6 +111,7 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		driverStation = DriverStation.getInstance();
 		oi = new OI(driveController, operationController);
+		// underglowLighting.turnOn();
 		
 		SmartDashboard.putData("Auto mode", chooser);
 	}
@@ -170,6 +186,16 @@ public class Robot extends IterativeRobot {
 			case Calibrations.AutonomousCrossBaseLine:
 				autonomousModeName += "Driving forward to cross base line.";
 				break;
+				
+			case Calibrations.AutonomousGeartoMiddleLiftScoreHigh:
+				autonomousModeName += "Gear->mid, goals.";
+				if (this.isRedAlliance) {
+					autonomousModeName += " Red.";;
+				}
+				else {
+					autonomousModeName += " Blue.";
+				}
+				
 			default:
 				autonomousModeConfirmation = "ERROR!";
 				autonomousModeName = "Mode not recognized.";
@@ -197,7 +223,7 @@ public class Robot extends IterativeRobot {
 		
 		switch (autoFromDashboard.toUpperCase()) {
 			case Calibrations.AutonomousGearToMiddleLift:
-				autonomousCommand = new AutonomousPlaceGearOnMiddleLift(driveTrain, gearCarriage);
+				autonomousCommand = new AutonomousPlaceGearOnMiddleLift(driveTrain, gearCarriage, carriageStalledLighting, carriageExtendedLighting);
 				break;
 			case Calibrations.AutonomousGearToLeftLift:
 				autonomousCommand = new AutonomousPlaceGearOnLeftLift(driveTrain, gearCarriage);
@@ -219,6 +245,15 @@ public class Robot extends IterativeRobot {
 				}
 				else {
 					autonomousCommand = new AutonomousCollectHopperShootGoalsBlueAlliance(driveTrain, fuelPump, fuelIndexer, fuelShooter);
+				}
+				
+				break;
+			case Calibrations.AutonomousGeartoMiddleLiftScoreHigh:
+				if (this.isRedAlliance) {
+					autonomousCommand = new AutonomousPlaceGearOnMiddleLiftShootHighGoalsRedAlliance(driveTrain, gearCarriage, carriageStalledLighting, carriageExtendedLighting, fuelPump, fuelIndexer, fuelShooter);
+				}
+				else {
+					autonomousCommand = new AutonomousPlaceGearOnMiddleLiftShootHighGoalsBlueAlliance(driveTrain, gearCarriage, carriageStalledLighting, carriageExtendedLighting, fuelPump, fuelIndexer, fuelShooter);
 				}
 				
 				break;
@@ -294,6 +329,13 @@ public class Robot extends IterativeRobot {
 	        driveTrain.ravenTank.setCutPower(false);
 	      }		
 	    }
+	    
+	    if (oi.getOperatorIsAiming()) {
+	    	flashlightLighting.turnOn();
+	    }
+	    else {
+	    	flashlightLighting.turnOff();
+	    }
 		
 		// Fuel Intake
 		oi.fuelIntakeCollectButton.whileHeld(new FuelIntakeCollect(fuelIntake));
@@ -316,11 +358,11 @@ public class Robot extends IterativeRobot {
 		// Gear Intake
 		oi.gearIntakeExtendButton.whileHeld(new GearIntakeExtend(gearIntake));
 		// Any time the gear intake is extended, make sure the carriage is retracted.
-		oi.gearIntakeExtendButton.whenPressed(new GearCarriageRetract(gearCarriage));
+		oi.gearIntakeExtendButton.whenPressed(new GearCarriageRetract(gearCarriage, carriageStalledLighting, carriageExtendedLighting));
 		
 		// Gear Carriage
-		oi.gearCarriageExtendButton.whenPressed(new GearCarriageExtend(gearCarriage, driveTrain));
-		oi.gearCarriageRetractButton.whenPressed(new GearCarriageRetract(gearCarriage));;
+		oi.gearCarriageExtendButton.whenPressed(new GearCarriageExtend(gearCarriage, driveTrain, carriageStalledLighting, carriageExtendedLighting));
+		oi.gearCarriageRetractButton.whenPressed(new GearCarriageRetract(gearCarriage, carriageStalledLighting, carriageExtendedLighting));;
 		
 		
 	}

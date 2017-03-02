@@ -22,6 +22,7 @@ public class ControlsMap {
 	public static final int climberClimbButton = 10;
 	
 	public static final int operationShiftToLowGearButton = 5;
+	public static final int operationFlashlightAimAxis = 4;
 	
 	// Custom buttons
 	public static final int fuelPumpOverrideShooterIsSpinningButton = 11;

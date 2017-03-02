@@ -16,6 +16,8 @@ public class GearCarriage extends Subsystem {
 	DigitalInput retractionLimit;
 	Timer stallTimer;
 	
+	public boolean retractedState = true;
+	
 	public GearCarriage(Joystick operationController, CANTalon extensionMotor, DigitalInput extensionLimit, DigitalInput retractionLimit) {
 		this.operationController = operationController;
 		this.extensionMotor = extensionMotor;
@@ -29,7 +31,9 @@ public class GearCarriage extends Subsystem {
     }
     
     public void extend() {
-    	System.out.println("extend method called");
+    	// System.out.println("extend method called");
+    	retractedState = false;
+    	
     	if (this.getIsAtExensionLimit() == false) {
     		this.set(Calibrations.GearCarriagePowerMagnitude);
     	}
@@ -39,6 +43,7 @@ public class GearCarriage extends Subsystem {
     }
     
     public void retract() {
+    	retractedState = true;
     	if (this.getIsAtRetractionLimit() == false) {
     		this.set(-1 * Calibrations.GearCarriagePowerMagnitude);
     	}

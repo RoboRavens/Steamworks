@@ -1,19 +1,27 @@
 package org.usfirst.frc.team1188.robot.commands.gearcarriage;
 
+import org.usfirst.frc.team1188.ravenhardware.Lighting;
 import org.usfirst.frc.team1188.robot.subsystems.GearCarriage;
 import edu.wpi.first.wpilibj.command.Command;
 
 
 public class GearCarriageRetract extends Command {
 	GearCarriage gearCarriage;
+	Lighting stalledLighting;
+	Lighting successLighting;
 
-    public GearCarriageRetract(GearCarriage gearCarriage) {
+    public GearCarriageRetract(GearCarriage gearCarriage, Lighting stalledLighting, Lighting successLighting) {
     	this.gearCarriage = gearCarriage;
     	requires(gearCarriage);
+    	
+    	this.stalledLighting = stalledLighting;
+    	this.successLighting = successLighting;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	this.stalledLighting.turnOff();
+    	this.successLighting.turnOff();
     }
 
     // Called repeatedly when this Command is scheduled to run
