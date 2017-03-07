@@ -53,6 +53,7 @@ public class DriveTrainTurnRelativeDegrees extends Command {
 
     // Called once after isFinished returns true
     protected void end() {
+    	ravenTank.setGyroTargetHeadingToCurrentHeading();
     	ravenTank.stop();
     }
 

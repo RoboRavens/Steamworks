@@ -24,6 +24,7 @@ public class LightsMaintainMatchState extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	/*
     	double matchTime = robot.driverStation.getMatchTime();
     	
     	if (matchTime <= 60 && matchTime > 57) {
@@ -33,6 +34,7 @@ public class LightsMaintainMatchState extends Command {
     	if (matchTime <= 30 && matchTime > 25) {
     		toggleLights();
     	}
+    	*/
     	
     }
     

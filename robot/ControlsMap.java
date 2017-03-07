@@ -5,6 +5,7 @@ public class ControlsMap {
 	public static final int driveShiftToLowGearButton = 5;
 	public static final int driveShiftToHighGearButton = 6;
 	public static final int driveCutPowerAxis = 3;
+	public static final int operatorOverrideAxis = 2;
 	
 	// Operation controller
 	public static final int fuelIntakeCollectButton = 1;

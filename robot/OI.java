@@ -91,6 +91,10 @@ public class OI {
 		return driveController.getRawAxis(ControlsMap.driveCutPowerAxis) > .25;
 	}
 	
+	public boolean getOperatorIsOverriding() {
+		return operationController.getRawAxis(ControlsMap.operatorOverrideAxis) > .25;
+	}
+	
 	public boolean getOperatorIsAiming() {
 		return operationController.getRawAxis(ControlsMap.operationFlashlightAimAxis) > .25;
 	}

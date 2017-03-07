@@ -20,12 +20,14 @@ public class GearCarriageStop extends Command {
     	// Re-retracting the carriage doesn't do anything if the carriage
     	// is at the limit, but if it ever drifts from the limit, this will
     	// restore it to that position.
+    	
+    	/*
     	if (gearCarriage.retractedState) {
     		gearCarriage.retract();
     	}
-    	else {
+    	else {*/
     		gearCarriage.stop();
-    	}
+    	//}
     }
 
     // Make this return true when this Command no longer needs to run execute()

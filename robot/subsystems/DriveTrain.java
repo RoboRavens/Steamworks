@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1188.robot.subsystems;
 
+import org.usfirst.frc.team1188.ravenhardware.Lighting;
 import org.usfirst.frc.team1188.ravenhardware.RavenTank;
 import org.usfirst.frc.team1188.robot.Robot;
 import org.usfirst.frc.team1188.robot.commands.drivetrain.DriveTrainDriveFPS;
@@ -22,9 +23,9 @@ public class DriveTrain extends Subsystem {
 		this.ravenTank = new RavenTank(robot);
 	}
 	
-	public DriveTrain(Robot robot, Joystick driveController, Solenoid lowGearSolenoid, Solenoid highGearSolenoid) {
+	public DriveTrain(Robot robot, Joystick driveController, Solenoid lowGearSolenoid, Solenoid highGearSolenoid, Lighting shiftedToLowGearLighting) {
 		initializeDriveTrain(robot, driveController);
-		this.ravenTank = new RavenTank(robot, lowGearSolenoid, highGearSolenoid);
+		this.ravenTank = new RavenTank(robot, lowGearSolenoid, highGearSolenoid, shiftedToLowGearLighting);
 	}
 
 	private void initializeDriveTrain(Robot robot, Joystick driveController) {

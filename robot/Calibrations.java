@@ -58,18 +58,19 @@ public final class Calibrations {
 	
 	public static final double FuelIntakePowerMagnitude = 1;
 	public static final double ClimberClimbPowerMagnitude = 1;
-	public static final double FuelPumpPowerMagnitude = 1;
+	public static final double FuelPumpPowerMagnitude = .8;
 	
 	public static final double FuelIndexerPowerMagnitude = 1;
 	public static final double GearCarriagePowerMagnitude = 1;
+	public static final double GearCarriageRetractionPowerMagnitude = .5;
 	
 	// Fuel shooter
 	public static final double ShooterRevPowerMagnitude = .83;
-	public static final double ShooterEncoderTargetSpeed = 31000;
+	public static final double ShooterEncoderTargetSpeed = 32000;
 	public static final double ShooterMaintainSpeedPower = .7;
 	public static final double ShooterOneHundredthPowerRpmRage = 400;
-	public static final double ShooterMaximumShootRpm = 33000;
-	public static final double ShooterMinimumShootRpm = 29500;
+	public static final double ShooterMaximumShootRpm = 34000;
+	public static final double ShooterMinimumShootRpm = 30500;
 	public static final double ShooterTargetPowerMagnitudeOffset = -.025;
 	public static final double ShooterRestorationPowerMagnitude = .85;
 	
@@ -101,18 +102,18 @@ public final class Calibrations {
 	
 	// Autonomous mode - place gear on middle lift
 	public static final double AutonomousPlaceGearOnMiddleLiftDriveForwardInches = 91;
-	public static final double AutonomousPlaceGearOnMiddleLiftDriveForwardPowerMagnitude = .25;
+	public static final double AutonomousPlaceGearOnMiddleLiftDriveForwardPowerMagnitude = .4;
 	public static final double AutonomousPlaceGearOnMiddleLiftDriveBackwardInches = 30;
 	public static final double AutonomousPlaceGearOnMiddleLiftDriveBackwardPowerMagnitude = .25;
 	public static final double GearCarriageAutoPlaceReorientationBaseDegrees = 5;
 	
 	// Autonomous mode - cross base line
 	public static final double AutonomousCrossBaseLineDriveForwardInches = 91;
-	public static final double AutonomousCrossBaselineDriveForwardPowerMagnitude = .3;
+	public static final double AutonomousCrossBaselineDriveForwardPowerMagnitude = .7;
   
 	// Autonomous mode - shoot high goals
-	public static final double AutonomousShootHighGoalShootingSeconds = 1;
-	public static final double AutonomousShootHighGoalRedAllianceDegreesToTurn = 15;
+	public static final double AutonomousShootHighGoalShootingSeconds = 10;
+	public static final double AutonomousShootHighGoalRedAllianceDegreesToTurn = 20;
 	
 	// Autonomous mode - drop hopper and shoot high goals
 	public static final double AutonomousDropHopperDriveFromWallInches = 77;

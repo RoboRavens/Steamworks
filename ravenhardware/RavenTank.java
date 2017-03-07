@@ -64,9 +64,10 @@ public class RavenTank {
 		initializeRavenTank(robot);
 	}
 	
-	public RavenTank(Robot robot, Solenoid lowGearSolenoid, Solenoid highGearSolenoid) {
+	public RavenTank(Robot robot, Solenoid lowGearSolenoid, Solenoid highGearSolenoid, Lighting shiftedToLowGearLighting) {
 		this.shiftToLowGearSolenoid = lowGearSolenoid;
 		this.shiftToHighGearSolenoid = highGearSolenoid;
+		this.shiftedToLowGearLighting = shiftedToLowGearLighting;
 		
 		initializeRavenTank(robot);
 	}
@@ -248,16 +249,22 @@ public class RavenTank {
     }
     
     public void shiftToLowGear() {
+    	
+    	
     	this.isInHighGear = false;
     	shiftToLowGearSolenoid.set(true);
     	shiftToHighGearSolenoid.set(false);
+    	
     
     }
     
     public void shiftToHighGear() {
+    	
+    	
     	this.isInHighGear = true;
     	shiftToHighGearSolenoid.set(true);
     	shiftToLowGearSolenoid.set(false);
+    	
     }
 	
 	public double getScaledTurnFromTranslation(double translation, double turn) {
@@ -479,6 +486,9 @@ public class RavenTank {
     	double rightInches = this.rightEncoder.getNetInchesTraveled();
     	
     	double netInchesTraveled = (leftInches + rightInches) / 2;
+    	
+    	
+    	netInchesTraveled = rightInches;
     	
     	return netInchesTraveled;
     }

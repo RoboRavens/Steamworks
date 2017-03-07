@@ -1,6 +1,6 @@
 
 package org.usfirst.frc.team1188.robot;
-import edu.wpi.first.wpilibj.CameraServer;
+// import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -69,7 +69,19 @@ public class Robot extends IterativeRobot {
 	CANTalon fuelShooterMotorFollower = new CANTalon(RobotMap.fuelShooterMotorFollower);
 	CANTalon fuelIndexerMotor = new CANTalon(RobotMap.fuelIndexerMotor);
 	
-	public final DriveTrain driveTrain = new DriveTrain(this, driveController, shiftToLowGearSolenoid, shiftToHighGearSolenoid);
+	Relay intakeReadyRelay = new Relay(RobotMap.intakeReadyLightRelay);
+	Relay carriageStalledRelay = new Relay(RobotMap.carriageStalledLightRelay);
+	Relay carriageExtendedRelay = new Relay(RobotMap.carriageExtendedLightRelay);
+	// Relay underglowRelay = new Relay(RobotMap.underglowLightRelay);
+	Relay flashlightRelay = new Relay(RobotMap.flashlightRelay);
+ 	
+	Lighting intakeReadyLighting = new Lighting(intakeReadyRelay);
+	Lighting carriageStalledLighting = new Lighting(carriageStalledRelay);
+	Lighting carriageExtendedLighting = new Lighting(carriageExtendedRelay);
+	// Lighting underglowLighting = new Lighting(underglowRelay);
+	Lighting flashlightLighting = new Lighting(flashlightRelay);
+	
+	public final DriveTrain driveTrain = new DriveTrain(this, driveController, shiftToLowGearSolenoid, shiftToHighGearSolenoid, carriageStalledLighting);
 	public final GearIntake gearIntake = new GearIntake(this.operationController, gearIntakeExtensionSolenoid, gearIntakeRetractionSolenoid);
 	public final GearCarriage gearCarriage = new GearCarriage(this.operationController, gearCarriageMotor, gearCarriageExtensionLimit, gearCarriageRetractionLimit);
 	public final FuelIntake fuelIntake = new FuelIntake(fuelIntakeMotor);
@@ -85,26 +97,16 @@ public class Robot extends IterativeRobot {
 	Timer autonomousTimer = new Timer();
 	String autoFromDashboard;
 
-	Relay intakeReadyRelay = new Relay(RobotMap.intakeReadyLightRelay);
-	Relay carriageStalledRelay = new Relay(RobotMap.carriageStalledLightRelay);
-	Relay carriageExtendedRelay = new Relay(RobotMap.carriageExtendedLightRelay);
-	// Relay underglowRelay = new Relay(RobotMap.underglowLightRelay);
-	Relay flashlightRelay = new Relay(RobotMap.flashlightRelay);
- 	
-	Lighting intakeReadyLighting = new Lighting(intakeReadyRelay);
-	Lighting carriageStalledLighting = new Lighting(carriageStalledRelay);
-	Lighting carriageExtendedLighting = new Lighting(carriageExtendedRelay);
-	// Lighting underglowLighting = new Lighting(underglowRelay);
-	Lighting flashlightLighting = new Lighting(flashlightRelay);
+
 	
 	Lights lights = new Lights(intakeReadyLighting, carriageStalledLighting, carriageExtendedLighting, this);
 	
  	
- 	CameraServer server;
+ 	// CameraServer server;
 	
  	public Robot() {
-		server = CameraServer.getInstance();		
-		server.startAutomaticCapture();
+		// server = CameraServer.getInstance();		
+		// server.startAutomaticCapture();
 	}
  	
 	@Override
@@ -336,6 +338,8 @@ public class Robot extends IterativeRobot {
 	    else {
 	    	flashlightLighting.turnOff();
 	    }
+	    
+	    gearCarriage.setOverrideState(oi.getOperatorIsOverriding());
 		
 		// Fuel Intake
 		oi.fuelIntakeCollectButton.whileHeld(new FuelIntakeCollect(fuelIntake));

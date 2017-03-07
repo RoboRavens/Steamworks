@@ -34,7 +34,7 @@ public class RobotMap {
 	public static final int gearCarriageRetractionLimit = 5;
 	
 	// Camera
-	public static final String cameraName = "cam0";
+	// public static final String cameraName = "cam0";
 	
 	// Relays
 	public static final int intakeReadyLightRelay = 0;
