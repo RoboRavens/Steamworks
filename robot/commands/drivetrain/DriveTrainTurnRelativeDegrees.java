@@ -32,7 +32,7 @@ public class DriveTrainTurnRelativeDegrees extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	System.out.println(" turning relative degrees.");
+    	// System.out.println(" turning relative degrees.");
     	ravenTank.fpsTank(0, 0);
     }
 

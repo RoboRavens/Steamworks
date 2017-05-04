@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 
-public class GearCarriageRetract extends Command {
+public class GearCarriageOverrideRetract extends Command {
 	GearCarriage gearCarriage;
 	Lighting stalledLighting;
 	Lighting successLighting;
 	Timer safetyTimer;
 
-    public GearCarriageRetract(GearCarriage gearCarriage, Lighting stalledLighting, Lighting successLighting) {
+    public GearCarriageOverrideRetract(GearCarriage gearCarriage, Lighting stalledLighting, Lighting successLighting) {
     	this.gearCarriage = gearCarriage;
     	requires(gearCarriage);
     	
@@ -32,10 +32,7 @@ public class GearCarriageRetract extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	if (gearCarriage.getIsAtRetractionLimit() == false) {
-        	gearCarriage.retract();
-    	}
-
+        gearCarriage.retract();
     }
 
     // Make this return true when this Command no longer needs to run execute()

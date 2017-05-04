@@ -3,6 +3,7 @@ package org.usfirst.frc.team1188.robot.commands.autonomousmodes;
 import org.usfirst.frc.team1188.robot.Calibrations;
 import org.usfirst.frc.team1188.robot.commands.drivetrain.DriveTrainDriveInches;
 import org.usfirst.frc.team1188.robot.commands.fuelshooter.FuelShooterShootForNumberOfSeconds;
+import org.usfirst.frc.team1188.robot.commands.fuelshooter.FuelShooterStartPityTimer;
 import org.usfirst.frc.team1188.robot.commands.fuelshooter.FuelShooterStop;
 import org.usfirst.frc.team1188.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team1188.robot.subsystems.FuelIndexer;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 
 public class AutonomousShootHighGoalCrossBaseLineBlueAlliance extends CommandGroup {
     public AutonomousShootHighGoalCrossBaseLineBlueAlliance(DriveTrain driveTrain, FuelPump fuelPump, FuelIndexer fuelIndexer, FuelShooter fuelShooter) {
+    	addSequential(new FuelShooterStartPityTimer(fuelShooter));
     	addSequential(new FuelShooterShootForNumberOfSeconds(fuelShooter,
     			fuelIndexer,
     			fuelPump, 
@@ -21,7 +23,7 @@ public class AutonomousShootHighGoalCrossBaseLineBlueAlliance extends CommandGro
     	addSequential(new DriveTrainDriveInches(driveTrain, 
     			Calibrations.AutonomousCrossBaseLineDriveForwardInches,
     			Calibrations.AutonomousCrossBaselineDriveForwardPowerMagnitude,
-    			Calibrations.drivingForward));
+    			Calibrations.drivingBackward));
     	
     }
 }

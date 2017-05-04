@@ -5,50 +5,39 @@ import org.usfirst.frc.team1188.robot.subsystems.FuelIndexer;
 import org.usfirst.frc.team1188.robot.subsystems.FuelPump;
 import org.usfirst.frc.team1188.robot.subsystems.FuelShooter;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
-public class FuelShooterShootForNumberOfSeconds extends Command {
+public class FuelShooterShootSRXPID extends Command {
 	FuelShooter shooter;
 	FuelIndexer indexer;
 	FuelPump pump;
-	Timer shooterTimer;
-	double secondsToShootFor;
 	
-    public FuelShooterShootForNumberOfSeconds(FuelShooter shooter, FuelIndexer indexer, FuelPump pump, double seconds) {
+    public FuelShooterShootSRXPID(FuelShooter shooter, FuelIndexer indexer, FuelPump pump) {
         requires(shooter);
         this.shooter = shooter;
         this.indexer = indexer;
         this.pump = pump;
-        this.shooterTimer = new Timer();
-        secondsToShootFor = seconds;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
     	shooter.setRpm(Calibrations.ShooterEncoderTargetSpeed);
-    	shooterTimer.start();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	shooter.shootSRXPID();
+
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-    	boolean timeElapsed = false;
-    	
-    	if (shooterTimer.get() >= secondsToShootFor) {
-    		timeElapsed = true;
-    	}
-    	
-        return timeElapsed;
+        return false;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	shooter.allStop();
+    	// shooter.stopPityTimer();
     	// stopPumping();
     }
 

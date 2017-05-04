@@ -42,4 +42,22 @@ public class RobotMap {
 	public static final int carriageExtendedLightRelay = 2;
 	public static final int underglowLightRelay = 3;
 	public static final int flashlightRelay = 3;
+	
+	public static final int arduinoLedPwmChannel1 = 6;
+	public static final int arduinoLedPwmChannel2 = 7;
+	public static final int arduinoLedPwmChannel3 = 8;
+	public static final int arduinoLedPwmChannel4 = 9;
+	
+	public static final int gearCarriageLeftProximitySensor = 6;
+	public static final int gearCarriageRightProximitySensor = 7;
+	
+	// Solenoids
+	public static final int gearIntakeExtensionSolenoid = 2;
+	public static final int gearIntakeRetractionSolenoid = 3;
+	// public static final int gearCarriageExtensionSolenoid = 2;
+	// public static final int gearCarriageRetractionSolenoid = 3;
+	public static final int shiftToLowGearSolenoid = 4;
+	public static final int shiftToHighGearSolenoid = 5;
+	public static final int fuelTankExtensionSolenoid = 0;
+	public static final int fuelTankRetractionSolenoid = 1;
 }

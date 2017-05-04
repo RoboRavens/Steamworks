@@ -29,6 +29,6 @@ public class FuelIndexer extends Subsystem {
     }
     
     public void set(double magnitude) {
-    	indexMotor.set(-1 * magnitude);
+    	indexMotor.set(magnitude);
     }
 }

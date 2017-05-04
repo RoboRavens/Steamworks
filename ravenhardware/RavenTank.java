@@ -248,6 +248,19 @@ public class RavenTank {
 		// driveRight3.set(magnitude);
     }
     
+    public void alignToMiddleLift() {
+    	setGyroTargetHeading(Calibrations.gyroMiddleLiftHeading);
+    }
+    
+    public void alignToLeftLift() {
+    	setGyroTargetHeading(Calibrations.gyroLeftLiftHeading);
+    }
+
+	public void alignToRightLift() {
+		setGyroTargetHeading(Calibrations.gyroRightLiftHeading);
+	}
+    
+    
     public void shiftToLowGear() {
     	
     	
@@ -302,7 +315,7 @@ public class RavenTank {
     */
     
     public double setGyroTargetHeadingToCurrentHeading(){    	
-    	this.gyroTargetHeading = orientationGyro.getAngle();
+    	this.gyroTargetHeading = getCurrentHeading();
     	
     	return gyroTargetHeading;
     }
@@ -346,6 +359,54 @@ public class RavenTank {
     	// return 0;
     }
     
+    
+    public double getStaticGyroAdjustment() {
+    	// If the gyro is in disabled mode, just return immediately.
+    	if (gyroMode == Calibrations.gyroDisabled) {
+    		return 0;
+    	}
+    	
+    	double heading = getCurrentHeading();
+    	
+    	// System.out.print("GTH: " + gyroTargetHeading);
+    	
+    	
+    	// Mod to eliminate extra rotations.
+    	double gyroAdjust = (heading - gyroTargetHeading) % 360;
+    	
+    	
+    	if (gyroAdjust < 0) {
+    		gyroAdjust = 360 + gyroAdjust;
+    	}
+    	
+    	// System.out.print(" gyro adjust1: " + gyroAdjust);
+    	
+    	// This snippet ensures that the robot will spin in the fastest direction to zero
+    	// if it ends up more than 180 degrees off of intention.
+    	if (gyroAdjust > 180){
+    		gyroAdjust = gyroAdjust - 360;
+    	}
+    	
+    	if (gyroAdjust > 180 || gyroAdjust < -180){
+    		gyroAdjust *= -1;
+    	}
+    	
+    	// System.out.println("GYRO ADJUST POST_adj: " + gyroAdjust);
+    	
+    	// Mod again in case the directional snippet was applied.
+    	gyroAdjust = Math.round(gyroAdjust) % 360;
+    	
+    	gyroAdjust *= Calibrations.gyroAdjustmentScaleFactor;
+    	
+        // System.out.println("Gyro adjust: " + gyroAdjust + " gyro: " + this.orientationGyro.getAngle() +  "Zero" + gyroZero);
+    	
+    	//System.out.println("Gyro adjust: " + gyroAdjust + " heading: " + getCurrentHeading());
+    	//System.out.println("-1 mod 360: " + (-1 % 360));
+        return gyroAdjust;
+    }
+    
+    
+    /*
     public double getStaticGyroAdjustment() {
     	// If the gyro is in disabled mode, just return immediately.
     	if (gyroMode == Calibrations.gyroDisabled) {
@@ -373,6 +434,7 @@ public class RavenTank {
     	
         return gyroAdjust;
     }
+    */
     
     public void stopAndWait() {
     	enableAutomatedDriving(0);
@@ -464,7 +526,7 @@ public class RavenTank {
     }
     
     public void maintainStateTurning() {
-    	if (Math.abs(gyroTargetHeading - orientationGyro.getAngle()) < 3) {
+    	if (Math.abs(gyroTargetHeading - getCurrentHeading()) < 3) {
     		automatedDrivingEnabled = false;
     		turning = false;
     	}
@@ -472,7 +534,15 @@ public class RavenTank {
     }
     
     public double getCurrentHeading() {
-    	return orientationGyro.getAngle();
+    	double heading = orientationGyro.getAngle();
+
+    	heading = heading % 360;
+    	
+    	if (heading < 0) {
+    		heading += 360;
+    	}
+    	
+    	return heading;
     }
     
     /*
@@ -525,6 +595,11 @@ public class RavenTank {
 		
 		System.out.println("ME NIT: " + this.netInchesTraveled);
     }
+
+	public void resetOrientationGyro() {
+		orientationGyro.reset();
+		
+	}
     
     /*
     public double getPowerCoefficient() {

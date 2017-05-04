@@ -49,7 +49,11 @@ public final class Calibrations {
 	public static final int drivingForward = -1;
 	public static final int drivingBackward = 1;
 	
-	
+	// Gyroscope headings
+	public static final double gyroMiddleLiftHeading = 0;
+	public static final double gyroLeftLiftHeading = 60;
+	public static final double gyroRightLiftHeading = 300;
+
 	// Until we have more genuine motion profiling capabilities, we'll use this.
 	// This is "feet necessary to decelerate per 1 magnitude of motor output."
 	// Problems with this include that motor output is acceleration, but necessary
@@ -66,11 +70,14 @@ public final class Calibrations {
 	
 	// Fuel shooter
 	public static final double ShooterRevPowerMagnitude = .83;
-	public static final double ShooterEncoderTargetSpeed = 32000;
+	// public static final double ShooterEncoderTargetSpeed = 32000;
 	public static final double ShooterMaintainSpeedPower = .7;
 	public static final double ShooterOneHundredthPowerRpmRage = 400;
-	public static final double ShooterMaximumShootRpm = 34000;
-	public static final double ShooterMinimumShootRpm = 30500;
+	// public static final double ShooterMaximumShootRpm = 34000;
+	// public static final double ShooterMinimumShootRpm = 30500;
+	
+
+	
 	public static final double ShooterTargetPowerMagnitudeOffset = -.025;
 	public static final double ShooterRestorationPowerMagnitude = .85;
 	
@@ -83,6 +90,7 @@ public final class Calibrations {
 	public static final double GearCarriageStallTimerMinimumDurationForStall = .2;
 	public static final double GearCarriageStallCurrentThresholdAmps = 45;
 	public static final double GearCarriageStallTimerSeconds = .75;
+	public static final double GearCarriageRetractionStallTimerSeconds = 1.5;
 	
     // Camera
 	public static final int cameraQuality = 50;
@@ -90,7 +98,7 @@ public final class Calibrations {
 	// Lighting
 	public static double lightingFlashTotalDurationMs = 1000;
 	public static double lightingFlashes = 10;
-	
+		
 	// Autonomous Modes
 	public static final String AutonomousGearToMiddleLift = "GEARMID";
 	public static final String AutonomousGearToLeftLift = "GEARLEFT";
@@ -99,9 +107,10 @@ public final class Calibrations {
 	public static final String AutonomousCrossBaseLine = "DRIVE";
 	public static final String AutonomousRankingPoint = "RP";
 	public static final String AutonomousGeartoMiddleLiftScoreHigh = "MIDSHOOT";
+	public static final String AutonomousGeartoMiddleLiftDrive = "GEARMIDDRIVE";
 	
 	// Autonomous mode - place gear on middle lift
-	public static final double AutonomousPlaceGearOnMiddleLiftDriveForwardInches = 91;
+	public static final double AutonomousPlaceGearOnMiddleLiftDriveForwardInches = 88;
 	public static final double AutonomousPlaceGearOnMiddleLiftDriveForwardPowerMagnitude = .4;
 	public static final double AutonomousPlaceGearOnMiddleLiftDriveBackwardInches = 30;
 	public static final double AutonomousPlaceGearOnMiddleLiftDriveBackwardPowerMagnitude = .25;
@@ -124,5 +133,47 @@ public final class Calibrations {
 	public static final double AutonomousDropHopperAimAtGoalDegreesBlueAlliance = 15;
 	public static final double AutonomousDropHopperAimAtGoalDegreesRedAlliance = -15;
 	public static final double AutonomousDropHopperShootSeconds = 13;
+	public static final double AutonomousPlaceGearOnMiddleLiftDriveForwardTimeoutSeconds = 5;
+	
+	// Autonomous mode - drive to neutral zone
+	//public static final double AutonomousDriveToNeutralZoneBackwardInches = ;
+	//public static final double AutonomousDriveToNeutralZoneLateralInches = ;
+	public static final double AutonomousDriveToNeutralZoneForwardInches = 255;
+	public static final double AutonomousDriveToNeutralZoneDriveToWallInches = 92;
+	
+	//public static final double ShooterPIDFValue = .0255;
+//	public static final double ShooterPIDFValue = 0.01816;
+	
+	// ACTUAL
+	public static final double ShooterPIDFValue = 0.009;
+	
+	
+	// public static final double ShooterPIDPValue = .113333;
+	// public static final double ShooterPIDPValue = .0012;
+	// public static final double ShooterPIDPValue = 0;
+	public static final double ShooterPIDIValue = 0;
+	
+	public static final double ShooterPIDPValue = 0.0035;
+	
+	public static final double ShooterPIDDValue = 0;
+	
+	public static final double ShooterPIDSpeedValue = 9400;
+	public static final double ShooterPityTimerSeconds = 4.5;
+	
+	
+	public static final double ShooterEncoderTargetSpeed = 4700;
+	public static final double ShooterMaximumShootRpm = 4500;
+	public static final double ShooterMinimumShootRpm = 4900;
+	
+	public static final double AutonomousPlaceGearOnLeftLiftDriveFromWallInches = 69;
+	public static final double AutonomousPlaceGearOnLeftLiftTurnDegrees = 56;
+	public static final double AutonomousPlaceGearOnLeftLiftDriveToLiftInches = 65;
+	
+	
+	
+	public static final double AutonomousPlaceGearOnRightLiftDriveFromWallInches = 78;
+	public static final double AutonomousPlaceGearOnRightLiftTurnDegrees = -56;
+	public static final double AutonomousPlaceGearOnRightLiftDriveToLiftInches = 54;
+	
 
 }

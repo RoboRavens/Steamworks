@@ -15,16 +15,20 @@ public class GearCarriage extends Subsystem {
 	DigitalInput extensionLimit;
 	DigitalInput retractionLimit;
 	Timer stallTimer;
+	DigitalInput leftGearSensor;
+	DigitalInput rightGearSensor;
 	
 	public boolean retractedState = true;
 	public boolean overrideState = false;
 	
-	public GearCarriage(Joystick operationController, CANTalon extensionMotor, DigitalInput extensionLimit, DigitalInput retractionLimit) {
+	public GearCarriage(Joystick operationController, CANTalon extensionMotor, DigitalInput extensionLimit, DigitalInput retractionLimit, DigitalInput leftGearSensor, DigitalInput rightGearSensor) {
 		this.operationController = operationController;
 		this.extensionMotor = extensionMotor;
 		this.extensionLimit = extensionLimit;
 		this.retractionLimit = retractionLimit;
 		this.stallTimer = new Timer();
+		this.leftGearSensor = leftGearSensor;
+		this.rightGearSensor = rightGearSensor;
 	}
 
     public void initDefaultCommand() {
@@ -40,22 +44,22 @@ public class GearCarriage extends Subsystem {
     	// System.out.println("extend method called");
     	retractedState = false;
     	
-    	if (this.getIsAtExensionLimit() == false) {
+    	//if (this.getIsAtExensionLimit() == false) {
     		this.set(Calibrations.GearCarriagePowerMagnitude);
-    	}
-    	else {
-    		this.set(0);
-    	}
+    	//}
+    	//else {
+    	//	this.set(0);
+    	//}
     }
     
     public void retract() {
     	retractedState = true;
-    	if (this.getIsAtRetractionLimit() == false) {
+    	//if (this.getIsAtRetractionLimit() == false) {
     		this.set(-1 * Calibrations.GearCarriageRetractionPowerMagnitude);
-    	}
-    	else {
-    		this.set(0);
-    	}
+    	//}
+    	//else {
+    	//	this.set(0);
+    	//}
     }
     
     public void stop() {
@@ -127,6 +131,16 @@ public class GearCarriage extends Subsystem {
     	}*/
     	
     	return retractionLimit.get();
+    }
+    
+    public boolean getCarriageHasGear() {
+    	boolean carriageHasGear = false;
+    	
+    	if (leftGearSensor.get() || rightGearSensor.get()) {
+    		carriageHasGear = true;
+    	}
+    	
+    	return carriageHasGear;
     }
 }
 

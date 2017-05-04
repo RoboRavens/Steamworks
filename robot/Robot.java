@@ -1,5 +1,6 @@
 
 package org.usfirst.frc.team1188.robot;
+import edu.wpi.first.wpilibj.CameraServer;
 // import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -20,6 +21,7 @@ import org.usfirst.frc.team1188.robot.subsystems.*;
 import org.usfirst.frc.team1188.robot.commands.fuelintake.*;
 import org.usfirst.frc.team1188.robot.commands.fuelpump.*;
 import org.usfirst.frc.team1188.robot.commands.fuelshooter.*;
+import org.usfirst.frc.team1188.robot.commands.fueltank.*;
 import org.usfirst.frc.team1188.robot.commands.gearcarriage.*;
 import org.usfirst.frc.team1188.robot.commands.gearintake.*;
 import org.usfirst.frc.team1188.robot.commands.fuelindexer.*;
@@ -28,6 +30,7 @@ import org.usfirst.frc.team1188.robot.commands.autonomousmodes.*;
 import org.usfirst.frc.team1188.robot.commands.climber.*;
 
 import com.ctre.CANTalon;
+import com.ctre.CANTalon.FeedbackDevice;
 
 
 /**
@@ -52,14 +55,19 @@ public class Robot extends IterativeRobot {
 	
 	Compressor compressor = new Compressor();
 	
-	Solenoid gearIntakeExtensionSolenoid = new Solenoid(0);
-	Solenoid gearIntakeRetractionSolenoid = new Solenoid(1);
-	Solenoid gearCarriageExtensionSolenoid = new Solenoid(2);
-	Solenoid gearCarriageRetractionSolenoid = new Solenoid(3);
-	Solenoid shiftToLowGearSolenoid = new Solenoid(4);
-	Solenoid shiftToHighGearSolenoid = new Solenoid(5);
+	Solenoid gearIntakeExtensionSolenoid = new Solenoid(RobotMap.gearIntakeExtensionSolenoid);
+	Solenoid gearIntakeRetractionSolenoid = new Solenoid(RobotMap.gearIntakeRetractionSolenoid);
+	// Solenoid gearCarriageExtensionSolenoid = new Solenoid(RobotMap.gearCarriageExtensionSolenoid);
+	// Solenoid gearCarriageRetractionSolenoid = new Solenoid(RobotMap.gearCarriageRetractionSolenoid);
+	Solenoid shiftToLowGearSolenoid = new Solenoid(RobotMap.shiftToLowGearSolenoid);
+	Solenoid shiftToHighGearSolenoid = new Solenoid(RobotMap.shiftToHighGearSolenoid);
+	Solenoid fuelTankExtensionSolenoid = new Solenoid(RobotMap.fuelTankExtensionSolenoid);
+	Solenoid fuelTankRetractionSolenoid = new Solenoid(RobotMap.fuelTankRetractionSolenoid);
+	
 	DigitalInput gearCarriageExtensionLimit = new DigitalInput(RobotMap.gearCarriageExtensionLimit);
 	DigitalInput gearCarriageRetractionLimit = new DigitalInput(RobotMap.gearCarriageRetractionLimit);
+	DigitalInput gearCarriageLeftProximitySensor = new DigitalInput(RobotMap.gearCarriageLeftProximitySensor);
+	DigitalInput gearCarriageRightProximitySensor = new DigitalInput(RobotMap.gearCarriageRightProximitySensor);
 	
 	CANTalon gearCarriageMotor = new CANTalon(RobotMap.gearCarriageMotor);
 	CANTalon fuelIntakeMotor = new CANTalon(RobotMap.fuelIntakeMotor);
@@ -83,12 +91,14 @@ public class Robot extends IterativeRobot {
 	
 	public final DriveTrain driveTrain = new DriveTrain(this, driveController, shiftToLowGearSolenoid, shiftToHighGearSolenoid, carriageStalledLighting);
 	public final GearIntake gearIntake = new GearIntake(this.operationController, gearIntakeExtensionSolenoid, gearIntakeRetractionSolenoid);
-	public final GearCarriage gearCarriage = new GearCarriage(this.operationController, gearCarriageMotor, gearCarriageExtensionLimit, gearCarriageRetractionLimit);
+	public final GearCarriage gearCarriage = new GearCarriage(this.operationController, gearCarriageMotor, gearCarriageExtensionLimit, gearCarriageRetractionLimit, gearCarriageLeftProximitySensor, gearCarriageRightProximitySensor);
 	public final FuelIntake fuelIntake = new FuelIntake(fuelIntakeMotor);
 	public final Climber climber = new Climber(climberMotor);
 	public final FuelPump fuelPump = new FuelPump(fuelPumpMotor);
 	public final FuelIndexer fuelIndexer = new FuelIndexer(fuelIndexerMotor);
 	public final FuelShooter fuelShooter = new FuelShooter(fuelShooterMotorLead, fuelShooterMotorFollower, fuelIndexer, fuelPump);
+	public final FuelTank fuelTank = new FuelTank(this.operationController, fuelTankExtensionSolenoid, fuelTankRetractionSolenoid);
+	
 	
 	public boolean isRedAlliance;
 	
@@ -102,11 +112,11 @@ public class Robot extends IterativeRobot {
 	Lights lights = new Lights(intakeReadyLighting, carriageStalledLighting, carriageExtendedLighting, this);
 	
  	
- 	// CameraServer server;
+ 	CameraServer server;
 	
  	public Robot() {
-		// server = CameraServer.getInstance();		
-		// server.startAutomaticCapture();
+		server = CameraServer.getInstance();		
+		server.startAutomaticCapture();
 	}
  	
 	@Override
@@ -116,6 +126,19 @@ public class Robot extends IterativeRobot {
 		// underglowLighting.turnOn();
 		
 		SmartDashboard.putData("Auto mode", chooser);
+		driveTrain.ravenTank.resetOrientationGyro();
+		
+		fuelShooterMotorLead.reverseSensor(false);
+		fuelShooterMotorLead.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+
+		fuelShooterMotorFollower.changeControlMode(CANTalon.TalonControlMode.Follower);
+		fuelShooterMotorFollower.set(fuelShooterMotorLead.getDeviceID());
+		
+		fuelShooterMotorLead.setProfile(0);
+		fuelShooterMotorLead.setF(Calibrations.ShooterPIDFValue);
+		fuelShooterMotorLead.setP(Calibrations.ShooterPIDPValue);
+		fuelShooterMotorLead.setI(Calibrations.ShooterPIDIValue);
+		fuelShooterMotorLead.setD(Calibrations.ShooterPIDDValue);
 	}
 
 	@Override
@@ -126,6 +149,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
+		driveTrain.ravenTank.setGyroTargetHeadingToCurrentHeading();
+		
 				
 		autoFromDashboard = SmartDashboard.getString("DB/String 0", "myDefaultData");
 		
@@ -149,6 +174,8 @@ public class Robot extends IterativeRobot {
 		}
 	
 		SmartDashboard.putString("DB/String 4", allianceString);
+		
+		diagnostics.outputDisabledDiagnostics();
 	}
 	
 	public void outputAutoModeToDashboardStringOne(String autoMode) {
@@ -197,6 +224,19 @@ public class Robot extends IterativeRobot {
 				else {
 					autonomousModeName += " Blue.";
 				}
+			
+			case Calibrations.AutonomousGeartoMiddleLiftDrive:
+				autonomousModeName += "Gear->mid, drive.";
+				if (this.isRedAlliance) {
+					autonomousModeName += " Red.";;
+				}
+				else {
+					autonomousModeName += " Blue.";
+				}				
+				
+				break;
+
+				
 				
 			default:
 				autonomousModeConfirmation = "ERROR!";
@@ -228,10 +268,10 @@ public class Robot extends IterativeRobot {
 				autonomousCommand = new AutonomousPlaceGearOnMiddleLift(driveTrain, gearCarriage, carriageStalledLighting, carriageExtendedLighting);
 				break;
 			case Calibrations.AutonomousGearToLeftLift:
-				autonomousCommand = new AutonomousPlaceGearOnLeftLift(driveTrain, gearCarriage);
+				autonomousCommand = new AutonomousPlaceGearOnLeftLift(driveTrain, gearCarriage, carriageStalledLighting, carriageExtendedLighting);
 				break;
 			case Calibrations.AutonomousGearToRightLift:
-				autonomousCommand = new AutonomousPlaceGearOnRightLift(driveTrain, gearCarriage);
+				autonomousCommand = new AutonomousPlaceGearOnRightLift(driveTrain, gearCarriage, carriageStalledLighting, carriageExtendedLighting);
 				break;
 			case Calibrations.AutonomousShootHighGoal:
 				if (this.isRedAlliance) {
@@ -262,6 +302,18 @@ public class Robot extends IterativeRobot {
 			case Calibrations.AutonomousCrossBaseLine:
 				autonomousCommand = new AutonomousCrossBaseLine(driveTrain);
 				break;
+			case Calibrations.AutonomousGeartoMiddleLiftDrive:
+				autonomousCommand = new AutonomousPlaceGearOnMiddleLiftDriveToNeutralZone(driveTrain, gearCarriage, carriageStalledLighting, carriageExtendedLighting);
+				
+				if (this.isRedAlliance) {
+					autonomousCommand = new AutonomousPlaceGearOnMiddleLiftDriveToNeutralZoneRedAlliance(driveTrain, gearCarriage, carriageStalledLighting, carriageExtendedLighting);
+				}
+				else {
+					autonomousCommand = new AutonomousPlaceGearOnMiddleLiftDriveToNeutralZoneBlueAlliance(driveTrain, gearCarriage, carriageStalledLighting, carriageExtendedLighting);
+				}
+				
+				break; 
+				
 		}
 	
 		return autonomousCommand;
@@ -307,7 +359,7 @@ public class Robot extends IterativeRobot {
 
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		System.out.println("TELEOP DIAGNOSTICS");
+		// System.out.println("TELEOP DIAGNOSTICS");
 		diagnostics.outputTeleopDiagnostics();
 		
 		runOperatorControls();
@@ -332,6 +384,19 @@ public class Robot extends IterativeRobot {
 	      }		
 	    }
 	    
+	    if (oi.getDriveAlignMiddleLiftButton()) {
+	    	driveTrain.ravenTank.alignToMiddleLift();
+	    }
+	    
+	    if (oi.getDriveAlignLeftLiftButton()) {
+	    	driveTrain.ravenTank.alignToLeftLift();
+	    }
+	    
+	    if (oi.getDriveAlignRightLiftButton()) {
+	    	driveTrain.ravenTank.alignToRightLift();
+	    }
+	    
+	    
 	    if (oi.getOperatorIsAiming()) {
 	    	flashlightLighting.turnOn();
 	    }
@@ -345,6 +410,9 @@ public class Robot extends IterativeRobot {
 		oi.fuelIntakeCollectButton.whileHeld(new FuelIntakeCollect(fuelIntake));
 		oi.fuelIntakeReverseButton.whileHeld(new FuelIntakeReverse(fuelIntake));
 		
+		oi.fuelIntakeCollectButton.whenPressed(new FuelTankExtend(fuelTank));
+		oi.fuelIntakeReverseButton.whenPressed(new FuelTankRetract(fuelTank));
+		
 		// Fuel Pump/Indexer
 		oi.fuelPumpPumpStaggeredButton.whileHeld(new FuelPumpPumpStaggered(fuelPump));
 		oi.fuelPumpPumpStaggeredButton.whileHeld(new FuelIndexerFeed(fuelIndexer));
@@ -354,10 +422,17 @@ public class Robot extends IterativeRobot {
 		// Shooter
 		// oi.shooterRevButton.whileHeld(new FuelShooterRev(fuelShooter));
 		
-		oi.shooterShootButton.whileHeld(new FuelShooterShoot(fuelShooter, fuelIndexer, fuelPump));
+		oi.shooterShootButton.whenPressed(new FuelShooterStartPityTimer(fuelShooter));
+		oi.shooterShootButton.whileHeld(new FuelShooterShootSRXPID(fuelShooter, fuelIndexer, fuelPump));
+		// oi.shooterShootButton.whileHeld(new FuelShooterShoot(fuelShooter, fuelIndexer,fuelPump));
 		
+//		oi.shooterShootButton.whenReleased(new FuelShooterStopPityTimer(fuelShooter));
 		// Climber
 		oi.climberClimbButton.whileHeld(new ClimberClimb(climber));
+		
+		if (oi.getClimberClimbButton()) {
+			driveTrain.ravenTank.setGyroTargetHeadingToCurrentHeading();
+		}
 		
 		// Gear Intake
 		oi.gearIntakeExtendButton.whileHeld(new GearIntakeExtend(gearIntake));
@@ -366,7 +441,10 @@ public class Robot extends IterativeRobot {
 		
 		// Gear Carriage
 		oi.gearCarriageExtendButton.whenPressed(new GearCarriageExtend(gearCarriage, driveTrain, carriageStalledLighting, carriageExtendedLighting));
-		oi.gearCarriageRetractButton.whenPressed(new GearCarriageRetract(gearCarriage, carriageStalledLighting, carriageExtendedLighting));;
+		oi.gearCarriageRetractButton.whenPressed(new GearCarriageRetract(gearCarriage, carriageStalledLighting, carriageExtendedLighting));
+		
+		// oi.gearCarriageOverrideExtensionLimitButton.whenPressed(new GearCarriageOverrideExtend(gearCarriage, driveTrain, carriageStalledLighting, carriageExtendedLighting));
+		oi.gearCarriageOverrideRetractionLimitButton.whenPressed(new GearCarriageOverrideRetract(gearCarriage, carriageStalledLighting, carriageExtendedLighting));
 		
 		
 	}

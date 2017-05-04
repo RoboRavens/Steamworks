@@ -17,7 +17,7 @@ public class AutonomousPlaceGearOnMiddleLift extends CommandGroup {
     			Calibrations.AutonomousPlaceGearOnMiddleLiftDriveForwardInches,
     			Calibrations.AutonomousPlaceGearOnMiddleLiftDriveForwardPowerMagnitude,
     			Calibrations.drivingForward,
-    			6.5));
+    			Calibrations.AutonomousPlaceGearOnMiddleLiftDriveForwardTimeoutSeconds));
     	addSequential(new GearCarriageExtend(gearCarriage, driveTrain, carriageStalledLighting, carriageExtendedLighting));
     	addSequential(new DriveTrainDriveInches(driveTrain, 
     			Calibrations.AutonomousPlaceGearOnMiddleLiftDriveBackwardInches,

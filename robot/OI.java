@@ -146,6 +146,14 @@ public class OI {
 		return operationController.getRawButton(ControlsMap.gearCarriageRetractButton);
 	}
 	
+	public boolean getGearCarriageOverrideExtensionLimitButton() {
+		return operationController.getRawButton(ControlsMap.gearCarriageOverrideExtensionLimitButton);
+	}
+	
+	public boolean getGearCarriageOverrideRetractionLimitButton() {
+		return operationController.getRawButton(ControlsMap.gearCarriageOverrideRetractionLimitButton);
+	}
+	
 	public boolean getClimberClimbButton() {
 		return operationController.getRawButton(ControlsMap.climberClimbButton);
 	}
@@ -156,6 +164,20 @@ public class OI {
 	
 	public boolean getFuelPumpReverseButton() {
 		return operationController.getRawButton(ControlsMap.fuelPumpReverseButton);
+	}
+
+	
+	
+	public boolean getDriveAlignMiddleLiftButton() {
+		return driveController.getRawButton(ControlsMap.driveControllerAlignMiddleLiftButton);
+	}
+	
+	public boolean getDriveAlignLeftLiftButton() {
+		return driveController.getRawButton(ControlsMap.driveControllerAlignLeftLiftButton);
+	}
+	
+	public boolean getDriveAlignRightLiftButton() {
+		return driveController.getRawButton(ControlsMap.driveControllerAlignRightLiftButton);
 	}
 	
 }

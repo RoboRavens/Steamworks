@@ -21,7 +21,7 @@ public class FuelPump extends Subsystem {
     }
     
     public void pump() {
-    	this.set(Calibrations.FuelPumpPowerMagnitude);
+    	this.set(Calibrations.FuelPumpPowerMagnitude * -1);
     }
     
     // To test - this will set the pump to speed mode, and then set it to a certain speed.

@@ -26,6 +26,7 @@ public class Climber extends Subsystem {
     }
         
     public void set(double magnitude) {
+    	// magnitude = magnitude *= -1;
     	climberMotor.set(magnitude);
     }
 }

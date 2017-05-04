@@ -11,44 +11,36 @@ import org.usfirst.frc.team1188.robot.subsystems.GearCarriage;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
-/**
- *
- */
-public class AutonomousPlaceGearOnRightLift extends CommandGroup {
 
-    public AutonomousPlaceGearOnRightLift(DriveTrain driveTrain, GearCarriage gearCarriage, Lighting carriageStalledLighting, Lighting carriageExtendedLighting) {
-    	
+public class AutonomousPlaceGearOnMiddleLiftDriveToNeutralZoneRedAlliance extends CommandGroup {	
+    public AutonomousPlaceGearOnMiddleLiftDriveToNeutralZoneRedAlliance(DriveTrain driveTrain, GearCarriage gearCarriage, Lighting carriageStalledLighting, Lighting carriageExtendedLighting) {
     	addSequential(new DriveTrainDriveInches(driveTrain, 
-    			Calibrations.AutonomousPlaceGearOnRightLiftDriveFromWallInches,
+    			Calibrations.AutonomousPlaceGearOnMiddleLiftDriveForwardInches,
     			Calibrations.AutonomousPlaceGearOnMiddleLiftDriveForwardPowerMagnitude,
     			Calibrations.drivingForward,
-    			6.5));
-    	
-    	
-    	addSequential(new DriveTrainTurnRelativeDegrees(driveTrain, Calibrations.AutonomousPlaceGearOnRightLiftTurnDegrees));
-    	
-    	
-    	addSequential(new DriveTrainDriveInches(driveTrain, 
-    			Calibrations.AutonomousPlaceGearOnRightLiftDriveToLiftInches,
-    			Calibrations.AutonomousPlaceGearOnMiddleLiftDriveForwardPowerMagnitude,
-    			Calibrations.drivingForward,
-    			6.5));
-    	
+    			Calibrations.AutonomousPlaceGearOnMiddleLiftDriveForwardTimeoutSeconds));
     	addSequential(new GearCarriageExtend(gearCarriage, driveTrain, carriageStalledLighting, carriageExtendedLighting));
     	addSequential(new DriveTrainDriveInches(driveTrain, 
-    			Calibrations.AutonomousPlaceGearOnMiddleLiftDriveBackwardInches + 10,
+    			Calibrations.AutonomousPlaceGearOnMiddleLiftDriveBackwardInches,
     			Calibrations.AutonomousPlaceGearOnMiddleLiftDriveBackwardPowerMagnitude,
     			Calibrations.drivingBackward));
     	addSequential(new GearCarriageRetract(gearCarriage, carriageStalledLighting, carriageExtendedLighting));
     	
-    	
-    	addSequential(new DriveTrainTurnRelativeDegrees(driveTrain, -1 * Calibrations.AutonomousPlaceGearOnRightLiftTurnDegrees));
-    	
     	addSequential(new DriveTrainDriveInches(driveTrain, 
-    			Calibrations.AutonomousPlaceGearOnRightLiftDriveFromWallInches,
+    			15,
     			1,
-    			Calibrations.drivingForward,
-    			6.5));
+    			Calibrations.drivingBackward));
     	
+    	
+    	addSequential(new DriveTrainTurnRelativeDegrees(driveTrain, -90));
+    	addSequential(new DriveTrainDriveInches(driveTrain, 
+    			Calibrations.AutonomousDriveToNeutralZoneDriveToWallInches,
+    			1,
+    			Calibrations.drivingForward));
+    	addSequential(new DriveTrainTurnRelativeDegrees(driveTrain, 90));
+    	addSequential(new DriveTrainDriveInches(driveTrain, 
+    			Calibrations.AutonomousDriveToNeutralZoneForwardInches,
+    			1,
+    			Calibrations.drivingForward));
     }
 }
